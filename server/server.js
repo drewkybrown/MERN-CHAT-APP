@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const bcrypt = require("bcrypt"); // Import bcrypt for password hashing
 const { UserModel } = require("./models/User");
 
 // Loading environment variables
@@ -34,9 +35,14 @@ app.post("/auth/signup", async (req, res) => {
   console.log("Signup request received:", req.body); // Log the request body
 
   const { username, password } = req.body;
-  const user = new UserModel({ username, password });
 
   try {
+    // Hash the user's password before saving it
+    const saltRounds = 10; // Number of salt rounds (adjust as needed)
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = new UserModel({ username, password: hashedPassword });
+
     await user.save();
     console.log("User saved:", user); // Log the saved user
 
