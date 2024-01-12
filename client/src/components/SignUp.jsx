@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../contexts/UserContext"; // Import UserContext
 
 function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { setUser } = useContext(UserContext); // Use UserContext
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -18,6 +20,7 @@ function SignUp() {
       if (response.ok) {
         const data = await response.json();
         console.log("Success:", data);
+        setUser({ username, token: data.token }); // Update user context
         // Additional logic for successful signup (e.g., redirecting the user)
       } else {
         console.error("Error:", response.status, response.statusText);
