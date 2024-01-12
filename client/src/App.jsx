@@ -1,8 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Import Routes instead of Switch
-import { UserProvider } from "./contexts/UserContext"; // Import UserProvider
-import SignUp from "./components/SignUp"; // Import SignUp component
-import SignIn from "./components/SignIn"; // Import SignIn component - ensure you've created this
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { UserProvider } from "./contexts/UserContext";
+import SignUp from "./components/SignUp";
+import SignIn from "./components/SignIn";
 
 function App() {
   return (
@@ -14,7 +14,6 @@ function App() {
         {/* Wrap routes with Router */}
         <Routes>
           {" "}
-          {/* Use Routes instead of Switch */}
           <Route path="/signup" element={<SignUp />} />{" "}
           {/* Define route for SignUp */}
           <Route path="/signin" element={<SignIn />} />{" "}

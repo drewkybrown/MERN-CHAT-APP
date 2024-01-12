@@ -1,10 +1,16 @@
 import React, { useState, useContext } from "react";
 import { UserContext } from "../contexts/UserContext"; // Import UserContext
+import { useNavigate } from "react-router-dom"; // Import useNavigate for redirecting
 
 function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useContext(UserContext); // Use UserContext
+  const navigate = useNavigate(); // Use navigate to redirect to a different page
+
+  const handleSignUpRedirect = () => {
+    navigate("/signin"); // Redirect to sign-in page
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -22,6 +28,7 @@ function SignUp() {
         console.log("Success:", data);
         setUser({ username, token: data.token }); // Update user context
         // Additional logic for successful signup (e.g., redirecting the user)
+        handleSignUpRedirect(); // Call the redirect function here
       } else {
         console.error("Error:", response.status, response.statusText);
       }
@@ -82,6 +89,15 @@ function SignUp() {
             </button>
           </div>
         </form>
+        {/* Navigation to Sign In */}
+        <div className="mt-4 text-center">
+          <button
+            onClick={handleSignUpRedirect}
+            className="text-sm text-indigo-600 hover:text-indigo-500"
+          >
+            Already a member? Sign in
+          </button>
+        </div>
       </div>
     </div>
   );
