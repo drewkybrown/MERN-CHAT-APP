@@ -4,11 +4,28 @@ function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // Handle the form submission logic here
-    console.log(username, password);
-  };
+    try {
+      const response = await fetch("http://localhost:3000/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Success:", data);
+        // Additional logic for successful signup (e.g., redirecting the user)
+      } else {
+        console.error("Error:", response.status, response.statusText);
+      }
+    } catch (err) {
+      console.error("Network Error:", err);
+    }
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
