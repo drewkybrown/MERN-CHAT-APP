@@ -31,6 +31,33 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.post("/auth/signin", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Find the user by username
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Compare the provided password with the stored hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Generate a token for the user
+    const payload = { userId: user._id };
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
+
+    res.json({ token });
+  } catch (err) {
+    console.error("Error in /auth/signin", err);
+    res.status(500).json({ message: "Error during sign in" });
+  }
+});
+
 app.post("/auth/signup", async (req, res) => {
   console.log("Signup request received:", req.body); // Log the request body
 

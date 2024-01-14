@@ -28,7 +28,7 @@ function SignIn() {
         const data = await response.json();
         console.log("Success:", data);
         setUser(data); // Assuming your server responds with user data
-        navigate("/dashboard"); // Redirect to dashboard after successful sign in
+        navigate("/chat"); // Redirect to dashboard after successful sign in
       } else {
         console.error(
           "Error signing in:",
