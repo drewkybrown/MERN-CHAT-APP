@@ -16,18 +16,22 @@ function SignIn() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      console.log("Submitting sign-in with:", { username, password }); // Log the submitted data
       const response = await fetch("http://localhost:3000/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        credentials: "include", // Include credentials (cookies) in the request
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Success:", data);
+        console.log("Success - Response Data:", data); // Log the response data
+
         setUser(data); // Assuming your server responds with user data
+        console.log("Navigating to /chat"); // Log before navigating
         navigate("/chat"); // Redirect to dashboard after successful sign in
       } else {
         console.error(

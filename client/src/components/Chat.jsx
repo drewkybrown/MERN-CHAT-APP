@@ -1,13 +1,7 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirecting
-import { UserContext } from "../contexts/UserContext"; // Import UserContext
+import React, { useState, useEffect } from "react";
 
-function Chat() {
-  return (
-    <div>
-      <h1>Chat</h1>
-    </div>
-  );
-}
+function Chat() {}
+
+return <div>CHAT SCREEN</div>;
 
 export default Chat;

@@ -15,22 +15,31 @@ function SignUp() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      console.log("Submitting sign-up with:", { username, password }); // Log the submitted data
       const response = await fetch("http://localhost:3000/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        credentials: "include", // Include credentials (cookies) in the request
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Success:", data);
+        console.log("Success - Response Data:", data); // Log the response data
+
         setUser({ username, token: data.token }); // Update user context
+
         // Additional logic for successful signup (e.g., redirecting the user)
+        console.log("Redirecting to /signin"); // Log before redirecting
         handleSignUpRedirect(); // Call the redirect function here
       } else {
-        console.error("Error:", response.status, response.statusText);
+        console.error(
+          "Error signing up:",
+          response.status,
+          response.statusText
+        );
       }
     } catch (err) {
       console.error("Network Error:", err);
