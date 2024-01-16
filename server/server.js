@@ -1,114 +1,97 @@
-const http = require("http");
+const dotenv = require("dotenv");
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
 const mongoose = require("mongoose");
-const app = express();
-const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
-const cookieParser = require("cookie-parser"); // Import cookie-parser for handling cookies
-const { UserModel } = require("./models/User"); // Import the UserModel from your models directory
-const WebSocket = require("ws");
-
-// Loading environment variables
+const cookieParser = require("cookie-parser");
+const userRoutes = require("./routes/userRoutes"); // Importing user routes
+const MessageModel = require("./models/Message"); // Importing Message model
+const UserModel = require("./models/User"); // Importing User model
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const chatRoutes = require("./routes/chatRoutes"); // Importing chat routes
+// const accessToken = jwt.sign(user, process.env.JWT_SECRET);
+// const user = { _id: userFromDb._id, username: userFromDb.username };
 require("dotenv").config();
+const app = express();
 
-app.use(express.json()); // for parsing application/json
+// Console logs for debugging
+console.log("Starting server...");
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
+// CORS middleware setup for Express
 app.use(
   cors({
-    origin: "http://localhost:5173", // Client's origin
+    origin: "http://localhost:5173", // Update with your client app's URL
     credentials: true,
   })
 );
-app.use(cookieParser()); // Use cookie-parser middleware to handle cookies
+console.log("CORS middleware configured.");
 
+app.use(express.json());
+app.use(cookieParser());
+
+// MongoDB Connection
 mongoose
   .connect(process.env.MONGODB_URI, {})
   .then(() => console.log("Successfully connected to MongoDB"))
   .catch((err) => console.error("Connection error", err));
 
-const jwtSecret = process.env.JWT_SECRET;
+// Use Routes
+app.use(userRoutes);
+app.use(chatRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-app.post("/auth/signin", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const user = await UserModel.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const payload = { userId: user._id };
-    const token = jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
-
-    // Set the token as a cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 3600000,
-    });
-
-    console.log("Cookie set:", token); // Log the token
-
-    res.json({ message: "Sign in successful" });
-  } catch (err) {
-    console.error("Error in /auth/signin", err);
-    res.status(500).json({ message: "Error during sign in" });
-  }
-});
-
-app.post("/auth/signup", async (req, res) => {
-  console.log("Signup request received:", req.body);
-
-  const { username, password } = req.body;
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new UserModel({ username, password: hashedPassword });
-
-    await user.save();
-    console.log("User saved:", user);
-
-    const payload = { userId: user._id };
-    const token = jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
-
-    // Set the token as a cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 3600000,
-    });
-
-    console.log("Cookie set:", token); // Log the token
-
-    res.json({ message: "Sign up successful" });
-  } catch (err) {
-    console.error("Error in /auth/signup", err);
-    res.status(500).json({ message: "Error in user registration" });
-  }
-});
-
+// HTTP server for Socket.IO
 const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:5173", // Update with your client app's URL
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+console.log("Socket.IO and WebSocket setup complete.");
 
-const wss = new WebSocket.Server({ server });
-wss.on("connection", (ws) => {
-  ws.on("message", (message) => {
-    console.log("Received message:", message);
-    ws.send("Hello from server!");
+// Socket.IO connection
+io.on("connection", (socket) => {
+  console.log(`New WebSocket connection: ${socket.id}`);
+
+  // Handling sendMessage event
+  socket.on("sendMessage", (messageData) => {
+    console.log(`Received message from ${socket.id}:`, messageData);
+
+    // Validate messageData
+    if (!messageData || !messageData.userId || !messageData.text) {
+      console.error("Missing userId or text in the received message");
+      return; // Exit if data is incomplete
+    }
+
+    // Create a new message document
+    const newMessage = new MessageModel({
+      userId: messageData.userId,
+      text: messageData.text,
+    });
+
+    // Save the message to MongoDB
+    newMessage
+      .save()
+      .then((savedMessage) => {
+        console.log("Message saved to MongoDB:", savedMessage);
+      })
+      .catch((err) => {
+        console.error("Error saving message:", err);
+      });
+
+    io.emit("message", messageData); // Broadcasting the message
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`WebSocket disconnected: ${socket.id}`);
   });
 });
 
+// Server listening
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

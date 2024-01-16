@@ -1,11 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); // Importing mongoose
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     minlength: 4,
-    maxlength: 20,
+    maxLength: 20,
     unique: true,
     trim: true,
   },
@@ -13,11 +14,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 4,
-    maxlength: 1024,
+    maxLength: 1024,
     trim: true,
   },
 });
 
-const UserModel = mongoose.model("User", userSchema);
+userSchema.pre("save", async function () {
+  this.password = bcrypt.hashSync(this.password, 10);
+});
 
-module.exports = { UserModel }; // Exporting the UserModel using module.exports
+const User = mongoose.model("User", userSchema);
+
+console.log("UserModel.js: UserModel created"); // Log that the UserModel is created
+
+module.exports = User; // Exporting the UserModel directly

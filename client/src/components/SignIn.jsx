@@ -1,16 +1,16 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirecting
-import { UserContext } from "../contexts/UserContext"; // Import UserContext
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
 
 function SignIn() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useContext(UserContext); // Use UserContext
-  const navigate = useNavigate(); // Use navigate to redirect to a different page
+  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
-  // Define handleSignUpRedirect function here, outside of handleSubmit
   const handleSignUpRedirect = () => {
-    navigate("/signup"); // Redirect to sign up page
+    console.log("Navigating to /signup"); // Added log
+    navigate("/signup");
   };
 
   async function handleSubmit(e) {
@@ -23,16 +23,17 @@ function SignIn() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        credentials: "include", // Include credentials (cookies) in the request
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem("token", data.token);
         console.log("Success - Response Data:", data); // Log the response data
 
-        setUser(data); // Assuming your server responds with user data
+        setUser(data);
         console.log("Navigating to /chat"); // Log before navigating
-        navigate("/chat"); // Redirect to dashboard after successful sign in
+        navigate("/chat");
       } else {
         console.error(
           "Error signing in:",

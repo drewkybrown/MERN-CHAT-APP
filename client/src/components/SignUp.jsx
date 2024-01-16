@@ -1,15 +1,16 @@
 import React, { useState, useContext } from "react";
-import { UserContext } from "../contexts/UserContext"; // Import UserContext
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirecting
+import { UserContext } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useContext(UserContext); // Use UserContext
-  const navigate = useNavigate(); // Use navigate to redirect to a different page
+  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSignUpRedirect = () => {
-    navigate("/signin"); // Redirect to sign-in page
+    console.log("Navigating to /auth/signin"); // Log before redirecting
+    navigate("auth/signin"); // Redirect to sign-in page
   };
 
   async function handleSubmit(e) {
@@ -22,18 +23,17 @@ function SignUp() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        credentials: "include", // Include credentials (cookies) in the request
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem("token", data.token);
         console.log("Success - Response Data:", data); // Log the response data
 
-        setUser({ username, token: data.token }); // Update user context
-
-        // Additional logic for successful signup (e.g., redirecting the user)
-        console.log("Redirecting to /signin"); // Log before redirecting
-        handleSignUpRedirect(); // Call the redirect function here
+        setUser({ username, token: data.token });
+        console.log("Redirecting to /auth/signin"); // Log before redirecting
+        handleSignUpRedirect();
       } else {
         console.error(
           "Error signing up:",
