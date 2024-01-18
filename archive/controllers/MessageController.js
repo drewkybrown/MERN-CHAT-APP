@@ -1,8 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const UserModel = require("../models/User");
+const User = require("../models/User");
 const Message = require("../models/Message"); // Import your Message model
-const jwtSecret = process.env.JWT_SECRET;
 
 const ChatController = {
   sendMessage: async (req, res) => {
@@ -50,7 +49,7 @@ const ChatController = {
       const messages = await Message.find({
         $or: [
           { userId: user._id, receiverId: userId },
-          { userId: userId, receiverId: user._id },
+          { userId: _id, receiverId: user._id },
         ],
       })
         .limit(100)

@@ -23,8 +23,8 @@ userSchema.pre("save", async function () {
   this.password = bcrypt.hashSync(this.password, 10);
 });
 
-const User = mongoose.model("User", userSchema);
+const UserModel = mongoose.model("User", userSchema);
 
 console.log("UserModel.js: UserModel created"); // Log that the UserModel is created
 
-module.exports = User; // Exporting the UserModel directly
+module.exports = UserModel; // Exporting the UserModel directly
