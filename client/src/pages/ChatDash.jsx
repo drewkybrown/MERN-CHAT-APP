@@ -1,12 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import InputLabel from "@mui/material/InputLabel";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
-import { io } from "socket.io-client";
+
 import { useOutletContext, useParams } from "react-router-dom";
 
 function ChatDash() {
@@ -58,46 +52,56 @@ function ChatDash() {
   }
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center" }}>
-      <Card sx={{ padding: 2, marginTop: 10, width: "60%" }}>
-        <div>
-          <div className="text-3xl font-bold underline"></div>
+    <div className="flex justify-center items-center h-screen bg-gray-200">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-lg">
+        {roomId && (
+          <div className="text-lg text-center font-bold py-2">{roomId}</div>
+        )}
 
-          {roomId && <Typography>Room: {roomId}</Typography>}
-          <Box sx={{ marginBottom: 5 }}>
-            {chat.map((data) => (
-              <Typography
-                sx={{ textAlign: data.received ? "left" : "right" }}
-                key={data.message}
+        <div className="overflow-y-auto max-h-80 p-4">
+          {chat.map((data, index) => (
+            <div
+              key={index}
+              className={`flex my-1 ${
+                data.received ? "justify-start" : "justify-end"
+              }`}
+            >
+              <p
+                className={`text-sm p-2 rounded-lg max-w-xs ${
+                  data.received
+                    ? "bg-blue-100 rounded-br-none"
+                    : "bg-green-100 rounded-bl-none"
+                }`}
               >
                 {data.message}
-              </Typography>
-            ))}
-          </Box>
-          <Box component="form" onSubmit={handleForm}>
-            {typing && (
-              <InputLabel
-                sx={{ color: "black" }}
-                shrink
-                htmlFor="message-input"
-              >
-                Typing
-              </InputLabel>
-            )}
-            <TextField
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <form onSubmit={handleForm} className="p-4 border-t border-gray-300">
+          {typing && (
+            <div className="text-xs text-gray-500 mb-1">Typing...</div>
+          )}
+          <div className="flex space-x-2">
+            <input
               id="message-input"
-              label="Write your message here"
-              variant="standard"
-              value={message} // Ensure `message` is defined in your component
+              type="text"
+              className="flex-1 p-2 border rounded-lg"
+              placeholder="Write your message here"
+              value={message}
               onChange={handleInput}
             />
-            <Button variant="text" type="submit">
+            <button
+              type="submit"
+              className="p-2 bg-blue-500 text-white rounded-lg"
+            >
               Send
-            </Button>
-          </Box>
-        </div>
-      </Card>
-    </Box>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 

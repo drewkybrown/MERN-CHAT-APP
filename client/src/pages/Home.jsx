@@ -5,7 +5,11 @@ import React from "react";
 function Home() {
   const { socket } = useOutletContext();
   console.log(socket);
-  return <Typography variant="h1">Home</Typography>;
+  return (
+    <h1 className="text-4xl font-bold text-center my-5">
+      Welcome to my Chat App
+    </h1>
+  );
 }
 
 export default Home;

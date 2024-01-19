@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
-import ChatDash from "../components/ChatDash";
+import ChatDash from "./ChatDash";
 import { Typography } from "@mui/material";
 
 function Room() {

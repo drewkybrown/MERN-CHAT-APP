@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
     socket.join(roomId);
   });
 
-  socket.on("disconnect", (socket) => {
+  socket.on("disconnect", () => {
     console.log("socket disconnected");
   });
 });
