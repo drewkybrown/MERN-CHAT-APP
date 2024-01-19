@@ -63,7 +63,8 @@ const ChatHeaderPage = () => {
             placeholder="ChatterBox Nepal"
           />
         </div>
-        <button onClick={createChatroom}>Create Chatroom</button>
+        <button onClick={createChatroom}>Create Chatroom</button>{" "}
+        {/* Create Chatroom button */}
       </div>
       <div className="chatrooms">
         {chatrooms.map((chatroom) => (
