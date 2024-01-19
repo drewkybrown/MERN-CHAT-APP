@@ -1,108 +1,84 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import PropTypes from "prop-types"; // Import PropTypes for prop validation
 
-import { useOutletContext, useParams } from "react-router-dom";
+const ChatDashPage = ({ socket }) => {
+  const { id: chatroomId } = useParams(); // Get chatroom ID from URL params
+  const [messages, setMessages] = React.useState([]);
+  const messageRef = React.useRef();
+  const [userId, setUserId] = React.useState("");
 
-function ChatDash() {
-  const { socket } = useOutletContext();
-  const [message, setMessage] = useState("");
-  const [chat, setChat] = useState([]);
-  const [typing, setTyping] = useState(false);
-  const { roomId } = useParams();
+  const sendMessage = () => {
+    if (socket) {
+      console.log("Sending message...");
+      socket.emit("chatroomMessage", {
+        chatroomId,
+        message: messageRef.current.value,
+      });
+      messageRef.current.value = "";
+    }
+  };
 
-  useEffect(() => {
-    if (!socket) return;
-    socket.on("message-from-server", (data) => {
-      setChat((prev) => [...prev, { message: data.message, received: true }]);
-    });
-    // socket.on("message-from-server", (data) => {
-    // console.log("Message received", data);
-    socket.on("typing-from-server", () => {
-      setTyping(true);
-      console.log("Someone is typing");
-    });
+  React.useEffect(() => {
+    const token = localStorage.getItem("CC_Token");
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUserId(payload.id);
+    }
+    if (socket) {
+      console.log("Listening for new messages...");
+      socket.on("newMessage", (message) => {
+        const newMessages = [...messages, message];
+        setMessages(newMessages);
+        console.log("New message received:", message);
+      });
+    }
 
-    socket.on("typing-stopped-from-server", () => {
-      setTyping(false);
-      console.log("Someone stopped typing");
-    });
-  }, [socket]);
+    // Join the chatroom
+    if (socket) {
+      console.log("Joining chatroom...");
+      socket.emit("joinRoom", { chatroomId });
+    }
 
-  function handleForm(e) {
-    e.preventDefault();
-    socket.emit("send-message", { message, roomId });
-    setChat((prev) => [...prev, { message, received: false }]);
-    console.log(message);
-    setMessage("");
-  }
-
-  const [typingTimeout, settypingTimeout] = useState(null);
-
-  function handleInput(e) {
-    setMessage(e.target.value);
-    socket.emit("typing-started-from-server", { roomId });
-    if (typingTimeout) clearTimeout(typingTimeout);
-    settypingTimeout(
-      setTimeout(() => {
-        //   socket.emit("typing-stopped-from-server");
-        socket.emit("typing-stopped-from-server", { roomId });
-        console.log("stopped typing");
-      }, 1000)
-    );
-  }
+    // Leave the chatroom when component unmounts
+    return () => {
+      if (socket) {
+        console.log("Leaving chatroom...");
+        socket.emit("leaveRoom", { chatroomId });
+      }
+    };
+  }, [chatroomId, messages, socket]);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
-      <div className="w-full max-w-md bg-white shadow-lg rounded-lg">
-        {roomId && (
-          <div className="text-lg text-center font-bold py-2">{roomId}</div>
-        )}
-
-        <div className="overflow-y-auto max-h-80 p-4">
-          {chat.map((data, index) => (
-            <div
-              key={index}
-              className={`flex my-1 ${
-                data.received ? "justify-start" : "justify-end"
-              }`}
-            >
-              <p
-                className={`text-sm p-2 rounded-lg max-w-xs ${
-                  data.received
-                    ? "bg-blue-100 rounded-br-none"
-                    : "bg-green-100 rounded-bl-none"
-                }`}
-              >
-                {data.message}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <form onSubmit={handleForm} className="p-4 border-t border-gray-300">
-          {typing && (
-            <div className="text-xs text-gray-500 mb-1">Typing...</div>
-          )}
-          <div className="flex space-x-2">
-            <input
-              id="message-input"
-              type="text"
-              className="flex-1 p-2 border rounded-lg"
-              placeholder="Write your message here"
-              value={message}
-              onChange={handleInput}
-            />
-            <button
-              type="submit"
-              className="p-2 bg-blue-500 text-white rounded-lg"
-            >
-              Send
-            </button>
+    <div>
+      <div>Chatroom Name</div>
+      <div>
+        {messages.map((message, i) => (
+          <div key={i}>
+            <span>{message.name}:</span> {message.message}
           </div>
-        </form>
+        ))}
+      </div>
+      <div>
+        <div>
+          <input
+            type="text"
+            name="message"
+            placeholder="Say something!"
+            ref={messageRef}
+          />
+        </div>
+        <div>
+          <button onClick={sendMessage}>Send</button>
+        </div>
       </div>
     </div>
   );
-}
+};
 
-export default ChatDash;
+// Prop validation
+ChatDashPage.propTypes = {
+  socket: PropTypes.object.isRequired, // Adjust the type to match your socket object type
+};
+
+export default ChatDashPage;
