@@ -9,7 +9,7 @@ const SignUpPage = () => {
   const nameRef = React.createRef();
   const navigate = useNavigate();
 
-  const registerUser = () => {
+  const SignUpUser = () => {
     const username = usernameRef.current.value;
     const password = passwordRef.current.value;
     const name = nameRef.current.value;
@@ -69,7 +69,7 @@ const SignUpPage = () => {
             ref={nameRef}
           />
         </div>
-        <button onClick={registerUser}>Register</button>
+        <button onClick={SignUpUser}>Register</button>
       </div>
     </div>
   );
