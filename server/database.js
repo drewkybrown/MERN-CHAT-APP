@@ -4,12 +4,21 @@ import mongoose from "mongoose";
 dotenv.config();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGODB_URI);
 
-mongoose.connection.on("error", (err) => {
+const dbConnection = mongoose.connection;
+
+dbConnection.on("error", (err) => {
   console.error("MongoDB connection error: " + err);
   process.exit(-1);
 });
+
+dbConnection.on("open", () => {
+  console.log("Connected to MongoDB");
+});
+
+dbConnection.on("disconnected", () => {
+  console.log("MongoDB disconnected");
+});
+
+export default dbConnection;
