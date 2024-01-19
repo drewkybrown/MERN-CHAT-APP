@@ -4,11 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 const ChatHeaderPage = () => {
   const [chatrooms, setChatrooms] = React.useState([]);
-  const navigate = useNavigate(); // Add this if you need programmatic navigation
+  const navigate = useNavigate();
   const chatroomNameRef = React.createRef();
 
   const getChatrooms = () => {
-    console.log("Fetching chatrooms..."); // Added console log
     axios
       .get("http://localhost:3000/chatroom", {
         headers: {
@@ -16,22 +15,19 @@ const ChatHeaderPage = () => {
         },
       })
       .then((response) => {
-        console.log("Chatrooms fetched successfully!"); // Added console log
         setChatrooms(response.data);
       })
       .catch((err) => {
-        console.error("Error fetching chatrooms:", err); // Added console log
+        console.error("Error fetching chatrooms:", err);
         setTimeout(getChatrooms, 3000);
       });
   };
 
   React.useEffect(() => {
     getChatrooms();
-    // eslint-disable-next-line
   }, []);
 
   const createChatroom = () => {
-    console.log("Creating chatroom..."); // Added console log
     const chatroomName = chatroomNameRef.current.value;
 
     axios
@@ -45,15 +41,11 @@ const ChatHeaderPage = () => {
         }
       )
       .then((response) => {
-        console.log("Chatroom created successfully!"); // Added console log
         getChatrooms();
         chatroomNameRef.current.value = "";
-        // You can use navigate here if you need to redirect after creation
-        // navigate('/some-route');
       })
       .catch((err) => {
-        console.error("Error creating chatroom:", err); // Added console log
-        // Handle error here if needed
+        console.error("Error creating chatroom:", err);
       });
   };
 
@@ -71,8 +63,8 @@ const ChatHeaderPage = () => {
             placeholder="ChatterBox Nepal"
           />
         </div>
+        <button onClick={createChatroom}>Create Chatroom</button>
       </div>
-      <button onClick={createChatroom}>Create Chatroom</button>
       <div className="chatrooms">
         {chatrooms.map((chatroom) => (
           <div key={chatroom._id} className="chatroom">

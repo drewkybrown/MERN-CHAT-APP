@@ -5,6 +5,7 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import ChatDashPage from "./pages/ChatDashPage";
 import ChatHeaderPage from "./pages/ChatHeaderPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
   const [socket, setSocket] = React.useState(null);
@@ -43,8 +44,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<HomePage />} exact />{" "} */}
-
+        <Route path="/" element={<HomePage />} exact />{" "}
         <Route
           path="/login"
           element={<LoginPage setupSocket={setupSocket} />}
