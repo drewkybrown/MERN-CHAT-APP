@@ -49,6 +49,11 @@ const ChatDashPage = ({ socket }) => {
     };
   }, [chatroomId, messages, socket]);
 
+  // Conditional rendering when socket is null
+  if (!socket) {
+    return <div>Loading...</div>; // or any other placeholder content
+  }
+
   return (
     <div>
       <div>Chatroom Name</div>
@@ -78,7 +83,7 @@ const ChatDashPage = ({ socket }) => {
 
 // Prop validation
 ChatDashPage.propTypes = {
-  socket: PropTypes.object.isRequired, // Adjust the type to match your socket object type
+  socket: PropTypes.object, // Adjust the type to match your socket object type
 };
 
 export default ChatDashPage;
