@@ -49,12 +49,12 @@ function App() {
         <Route path="/register" element={<SignUpPage />} exact />
         <Route
           path="/dashboard"
-          element={<DashboardPage socket={socket} />}
+          element={<ChatDashPage socket={socket} />}
           exact
         />
         <Route
           path="/chatroom/:id"
-          element={<ChatroomPage socket={socket} />}
+          element={<ChatHeaderPage socket={socket} />}
           exact
         />
       </Routes>
