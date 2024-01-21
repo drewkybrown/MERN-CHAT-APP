@@ -1,13 +1,15 @@
+// server/sockets.js
+
 import { Server as SocketServer } from "socket.io";
 import jwt from "jwt-then";
 import User from "./models/User.js";
 import Message from "./models/Message.js";
+import PrivateMessage from "./models/PrivateMessage.js";
 
-// Create a function to set up Socket.io
-export function setupSocketServer(server) {
-  const io = new SocketServer(server, {
+export function setupSocketServer(httpServer) {
+  const io = new SocketServer(httpServer, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "*", // Allow requests from any origin
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -16,21 +18,12 @@ export function setupSocketServer(server) {
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.query.token;
-      if (!token) {
-        throw new Error("Token not provided.");
-      }
-
       const payload = await jwt.verify(token, process.env.SECRET);
-      if (!payload.id) {
-        throw new Error("Invalid payload.");
-      }
-
       socket.userId = payload.id;
       console.log("Socket Authenticated: " + socket.userId);
       next();
     } catch (err) {
-      console.error("Socket Authentication Error:", err.message);
-      socket.disconnect(); // Disconnect the socket on authentication error
+      console.error("Socket Authentication Error:", err);
     }
   });
 
@@ -43,47 +36,51 @@ export function setupSocketServer(server) {
 
     socket.on("joinRoom", ({ chatroomId }) => {
       socket.join(chatroomId);
-      console.log("A user joined chatroom: " + chatroomId);
+      console.log("A user joined chatroom:", chatroomId);
     });
 
     socket.on("leaveRoom", ({ chatroomId }) => {
       socket.leave(chatroomId);
-      console.log("A user left chatroom: " + chatroomId);
+      console.log("A user left chatroom:", chatroomId);
     });
 
-    socket.on("chatroomMessage", async ({ chatroomId, message }) => {
-      if (!socket.userId) {
-        console.error("User not authenticated.");
-        return;
-      }
+    // Add other socket event handlers here...
 
-      if (message.trim().length > 0) {
-        try {
-          const user = await User.findOne({ _id: socket.userId });
-          if (!user) {
-            throw new Error("User not found.");
-          }
+    socket.on("private_message", async (data) => {
+      try {
+        const { senderUsername, recipientUsername, content } = data;
 
-          const newMessage = new Message({
-            chatroom: chatroomId,
-            user: socket.userId,
-            message,
-          });
-          io.to(chatroomId).emit("newMessage", {
-            message,
-            name: user.name,
-            userId: socket.userId,
-          });
-          await newMessage.save();
-          console.log(
-            "Message sent by user:",
-            socket.userId,
-            "in chatroom:",
-            chatroomId
-          );
-        } catch (error) {
-          console.error("Error sending chatroom message:", error.message);
+        console.log("Received private message:", data);
+
+        const senderUser = await User.findOne({ username: senderUsername });
+        const recipientUser = await User.findOne({
+          username: recipientUsername,
+        });
+
+        if (!senderUser || !recipientUser) {
+          console.error("Sender or recipient not found");
+          return;
         }
+
+        const newPrivateMessage = new PrivateMessage({
+          sender: senderUser._id,
+          recipient: recipientUser._id,
+          content,
+        });
+
+        await newPrivateMessage.save();
+
+        io.to(senderUser._id).emit("private_message", newPrivateMessage);
+        io.to(recipientUser._id).emit("private_message", newPrivateMessage);
+
+        console.log(
+          "Private message sent from",
+          senderUsername,
+          "to",
+          recipientUsername
+        );
+      } catch (error) {
+        console.error("Error handling private message:", error);
       }
     });
   });

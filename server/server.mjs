@@ -1,15 +1,21 @@
+import dotenv from "dotenv";
 import http from "http";
 import express from "express";
 import app from "./app.js";
-import database from "./database.js";
-import { setupSocketServer } from "./sockets.js"; // Import the Socket.io setup function
+import { setupSocketServer } from "./server/sockets.js"; // Import the socket setup function
+import { connectDatabase } from "./server/database.js"; // Import the database connection function
+
+dotenv.config();
 
 const port = process.env.PORT || 3000;
 let serverStatus = "not running";
 
+// Connect to the database
+connectDatabase();
+
 const server = http.createServer(app);
 
-// Set up Socket.io using the function from sockets.js
+// Call the setupSocketServer function to set up Socket.IO
 setupSocketServer(server);
 
 const publicDir = new URL("./public", import.meta.url).pathname;
@@ -18,6 +24,8 @@ app.use(express.static(publicDir));
 app.get("/checkStatus", (req, res) => {
   res.json({ status: serverStatus });
 });
+
+// Other routes and server-related logic...
 
 server.listen(port, () => {
   serverStatus = "running";

@@ -1,22 +1,19 @@
 import express from "express";
-import cors from "cors";
-import userRoute from "./routes/userRoute.js";
-import chatRoute from "./routes/chatRoute.js";
+import path from "path";
+import privateMessageRoute from "./routes/privateMessageRoute.js";
+import checkStatusRoute from "./routes/checkStatusRoute.js";
+import chatroomRoute from "./routes/chatroomRoute.js";
+import messagesRoute from "./routes/messagesRoute.js";
 
 const app = express();
 
-// Middleware for parsing JSON and urlencoded data
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const publicDir = new URL("./public", import.meta.url).pathname;
+app.use(express.static(publicDir));
 
-// CORS middleware for cross-origin requests
-app.use(cors());
-
-// Routes
-app.use("/user", userRoute);
-app.use("/chatroom", chatRoute);
-
-// Console logs to track different actions
-console.log("Express app initialized."); // Added console log
+// Use the imported route handlers
+app.use("/private-message", privateMessageRoute);
+app.use("/checkStatus", checkStatusRoute);
+app.use("/chatroom", chatroomRoute);
+app.use("/chatroom/:chatroomId/messages", messagesRoute);
 
 export default app;
