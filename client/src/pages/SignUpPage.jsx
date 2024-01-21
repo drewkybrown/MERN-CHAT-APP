@@ -1,7 +1,6 @@
-// page for sign up view of the app
 import React from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate, Link } from "react-router-dom"; // Import useNavigate and Link
 
 const SignUpPage = () => {
   const usernameRef = React.createRef();
@@ -70,6 +69,11 @@ const SignUpPage = () => {
           />
         </div>
         <button onClick={SignUpUser}>Register</button>
+
+        {/* Add a button to navigate back to the Login page */}
+        <Link to="/login">
+          <button>Already a Member? Login</button>
+        </Link>
       </div>
     </div>
   );
