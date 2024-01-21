@@ -1,20 +1,22 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import io from "socket.io-client";
-import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import ChatDashPage from "./pages/ChatDashPage";
-import ChatHeaderPage from "./pages/ChatHeaderPage";
-import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+import IndexPage from "./pages/IndexPage";
+import ChatroomPage from "./pages/ChatroomPage";
+import PrivateMessagesPage from "./pages/PrivateMessagesPage"; // Import your PrivateMessagesPage component
+import UserSearch from "./pages/UserSearch";
+import io from "socket.io-client";
 
 function App() {
   const [socket, setSocket] = React.useState(null);
 
   const setupSocket = () => {
-    console.log("Setting up socket connection...");
+    console.log("Setting up socket connection..."); // Added console log
     const token = localStorage.getItem("CC_Token");
     if (token && !socket) {
-      console.log("Connecting to socket server...");
+      console.log("Connecting to socket server..."); // Added console log
       const newSocket = io("http://localhost:3000", {
         query: {
           token: localStorage.getItem("CC_Token"),
@@ -22,13 +24,13 @@ function App() {
       });
 
       newSocket.on("disconnect", () => {
-        console.log("Socket disconnected. Attempting to reconnect...");
+        console.log("Socket disconnected. Attempting to reconnect..."); // Added console log
         setSocket(null);
         setTimeout(setupSocket, 3000);
       });
 
       newSocket.on("connect", () => {
-        console.log("Socket connected.");
+        console.log("Socket connected."); // Added console log
         // Additional logic can be added here if needed
       });
 
@@ -44,21 +46,31 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} exact />{" "}
+        <Route path="/" element={<IndexPage />} exact />
         <Route
           path="/login"
           element={<LoginPage setupSocket={setupSocket} />}
           exact
         />
-        <Route path="/register" element={<SignUpPage />} exact />
+        <Route path="/register" element={<RegisterPage />} exact />
         <Route
-          path="/chatroom/:id"
-          element={<ChatDashPage socket={socket} />}
+          path="/dashboard"
+          element={<DashboardPage socket={socket} />}
           exact
         />
         <Route
-          path="/dashboard"
-          element={<ChatHeaderPage socket={socket} />}
+          path="/chatroom/:id"
+          element={<ChatroomPage socket={socket} />}
+          exact
+        />
+        <Route
+          path="/private-messages/:userId"
+          element={<PrivateMessagesPage socket={socket} />}
+        />
+
+        <Route
+          path="/user-search"
+          element={<UserSearch socket={socket} />} // Add the UserSearch component
           exact
         />
       </Routes>

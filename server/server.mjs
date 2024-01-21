@@ -2,8 +2,9 @@ import dotenv from "dotenv";
 import http from "http";
 import express from "express";
 import app from "./app.js";
-import { setupSocketServer } from "./server/sockets.js"; // Import the socket setup function
-import { connectDatabase } from "./server/database.js"; // Import the database connection function
+import { setupSocketServer } from "./sockets.js"; // Correct relative path
+
+import { connectDatabase } from "./database.js"; // Correct relative path
 
 dotenv.config();
 
