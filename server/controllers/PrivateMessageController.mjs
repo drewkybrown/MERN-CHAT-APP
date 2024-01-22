@@ -1,5 +1,3 @@
-// controllers/PrivateMessageController.mjs
-
 import PrivateMessage from "../models/PrivateMessage.js"; // Make sure the path to your model is correct
 import User from "../models/User.js"; // Import the User model
 

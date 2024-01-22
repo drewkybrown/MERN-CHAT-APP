@@ -32,8 +32,9 @@ const LoginPage = (props) => {
           err.response &&
           err.response.data &&
           err.response.data.message
-        )
-          console.error("Error:", err.response.data.message);
+        ) {
+          console.error("Error:", err.response.data.message); // Added console log
+        }
       });
   };
 

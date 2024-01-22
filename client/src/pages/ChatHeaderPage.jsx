@@ -1,13 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 const ChatHeaderPage = () => {
-  const [chatrooms, setChatrooms] = React.useState([]);
+  const [chatrooms, setChatrooms] = useState([]);
   const navigate = useNavigate();
   const chatroomNameRef = React.createRef();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Retrieve user info from localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
+
+  const logout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("CC_Token");
+    localStorage.removeItem("loggedIn");
+
+    // Redirect to the login page
+    navigate("/login");
+  };
 
   const getChatrooms = () => {
+    console.log("Fetching chatrooms...");
     axios
       .get("http://localhost:3000/chatroom", {
         headers: {
@@ -15,6 +35,7 @@ const ChatHeaderPage = () => {
         },
       })
       .then((response) => {
+        console.log("Chatrooms fetched successfully!");
         setChatrooms(response.data);
       })
       .catch((err) => {
@@ -23,11 +44,13 @@ const ChatHeaderPage = () => {
       });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log("Getting initial chatrooms...");
     getChatrooms();
   }, []);
 
   const createChatroom = () => {
+    console.log("Creating chatroom...");
     const chatroomName = chatroomNameRef.current.value;
 
     axios
@@ -41,6 +64,7 @@ const ChatHeaderPage = () => {
         }
       )
       .then((response) => {
+        console.log("Chatroom created successfully!");
         getChatrooms();
         chatroomNameRef.current.value = "";
       })
@@ -51,7 +75,12 @@ const ChatHeaderPage = () => {
 
   return (
     <div className="card">
-      <div className="cardHeader">Chatrooms</div>
+      <div className="cardHeader">
+        Welcome, {user ? user.name : "Guest"}!
+        <button onClick={logout} style={{ marginLeft: "10px" }}>
+          Logout
+        </button>
+      </div>
       <div className="cardBody">
         <div className="inputGroup">
           <label htmlFor="chatroomName">Chatroom Name</label>
@@ -63,9 +92,8 @@ const ChatHeaderPage = () => {
             placeholder="ChatterBox Nepal"
           />
         </div>
-        <button onClick={createChatroom}>Create Chatroom</button>{" "}
-        {/* Create Chatroom button */}
       </div>
+      <button onClick={createChatroom}>Create Chatroom</button>
       <div className="chatrooms">
         {chatrooms.map((chatroom) => (
           <div key={chatroom._id} className="chatroom">
@@ -75,6 +103,7 @@ const ChatHeaderPage = () => {
             </Link>
           </div>
         ))}
+        <Link to="/user-search">Private Messages</Link>
       </div>
     </div>
   );

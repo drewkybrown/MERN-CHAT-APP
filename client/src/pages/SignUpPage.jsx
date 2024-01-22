@@ -13,6 +13,8 @@ const SignUpPage = () => {
     const password = passwordRef.current.value;
     const name = nameRef.current.value;
 
+    console.log("Signing up user..."); // Added console log
+
     axios
       .post("http://localhost:3000/user/register", {
         username,
@@ -20,6 +22,7 @@ const SignUpPage = () => {
         name,
       })
       .then(() => {
+        console.log("User registered successfully!"); // Added console log
         alert("User registered successfully!");
         navigate("/login");
       })
@@ -29,8 +32,9 @@ const SignUpPage = () => {
           err.response &&
           err.response.data &&
           err.response.data.message
-        )
-          console.error("Error:", err.response.data.message);
+        ) {
+          console.error("Error:", err.response.data.message); // Added console log
+        }
       });
   };
 

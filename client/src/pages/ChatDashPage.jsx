@@ -1,12 +1,17 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import PropTypes from "prop-types"; // Import PropTypes for prop validation
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import PropTypes from "prop-types";
+import axios from "axios";
 
 const ChatDashPage = ({ socket }) => {
-  const { id: chatroomId } = useParams(); // Get chatroom ID from URL params
-  const [messages, setMessages] = React.useState([]);
-  const messageRef = React.useRef();
-  const [userId, setUserId] = React.useState("");
+  const { id: chatroomId } = useParams();
+  const navigate = useNavigate(); // Create a navigate function
+
+  const [chatroom, setChatroom] = useState({ name: "Loading..." });
+  const [messages, setMessages] = useState([]);
+  const messageRef = useRef();
+  const [userToken] = useState(localStorage.getItem("CC_Token"));
+  const [user, setUser] = useState(null); // Initialize user state
 
   const sendMessage = () => {
     if (socket) {
@@ -19,71 +24,100 @@ const ChatDashPage = ({ socket }) => {
     }
   };
 
-  React.useEffect(() => {
-    const token = localStorage.getItem("CC_Token");
-    if (token) {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setUserId(payload.id);
-    }
-    if (socket) {
-      console.log("Listening for new messages...");
-      socket.on("newMessage", (message) => {
-        const newMessages = [...messages, message];
-        setMessages(newMessages);
-        console.log("New message received:", message);
-      });
-    }
-
-    // Join the chatroom
-    if (socket) {
-      console.log("Joining chatroom...");
-      socket.emit("joinRoom", { chatroomId });
-    }
-
-    // Leave the chatroom when component unmounts
-    return () => {
-      if (socket) {
-        console.log("Leaving chatroom...");
-        socket.emit("leaveRoom", { chatroomId });
+  useEffect(() => {
+    const fetchChatroomDetails = async () => {
+      try {
+        console.log("Fetching chatroom details...");
+        const response = await axios.get(
+          `http://localhost:3000/chatroom/${chatroomId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        console.log("Chatroom details fetched successfully!");
+        setChatroom(response.data);
+      } catch (error) {
+        console.error("Error fetching chatroom details:", error);
+        setChatroom({ name: "Unable to load chatroom name" });
       }
     };
-  }, [chatroomId, messages, socket]);
 
-  // Conditional rendering when socket is null
-  if (!socket) {
-    return <div>Loading...</div>; // or any other placeholder content
-  }
+    const fetchMessages = async () => {
+      try {
+        console.log("Fetching messages...");
+        const response = await axios.get(
+          `http://localhost:3000/chatroom/${chatroomId}/messages`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        console.log("Messages fetched successfully!");
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchChatroomDetails();
+    fetchMessages();
+
+    // Retrieve user info from localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData) {
+      setUser(userData);
+    }
+  }, [chatroomId, userToken]);
+
+  useEffect(() => {
+    if (socket) {
+      const handleNewMessage = (message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      };
+
+      socket.on("newMessage", handleNewMessage);
+
+      socket.emit("joinRoom", { chatroomId });
+
+      console.log("Joined chatroom:", chatroomId);
+
+      return () => {
+        socket.off("newMessage", handleNewMessage);
+        socket.emit("leaveRoom", { chatroomId });
+
+        console.log("Left chatroom:", chatroomId);
+      };
+    }
+  }, [chatroomId, socket]);
 
   return (
     <div>
-      <div>Chatroom Name</div>
+      <h1>{chatroom.name}</h1>
       <div>
         {messages.map((message, i) => (
           <div key={i}>
-            <span>{message.name}:</span> {message.message}
+            <span>{message.user.username || "Anonymous"}:</span>{" "}
+            {message.message}
           </div>
         ))}
       </div>
       <div>
-        <div>
-          <input
-            type="text"
-            name="message"
-            placeholder="Say something!"
-            ref={messageRef}
-          />
-        </div>
-        <div>
-          <button onClick={sendMessage}>Send</button>
-        </div>
+        <p>Welcome, {user ? user.name : "Guest"}!</p>{" "}
+        {/* Display user's name */}
+        <input type="text" ref={messageRef} placeholder="Type a message..." />
+        <button onClick={sendMessage}>Send</button>
+        {/* Add a button to navigate back to localhost:3000/dashboard */}
+        <button onClick={() => navigate("/dashboard")}>Leave Chat Room</button>
       </div>
     </div>
   );
 };
 
-// Prop validation
 ChatDashPage.propTypes = {
-  socket: PropTypes.object, // Adjust the type to match your socket object type
+  socket: PropTypes.object.isRequired,
 };
 
 export default ChatDashPage;

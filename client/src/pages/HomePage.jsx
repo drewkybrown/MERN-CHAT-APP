@@ -1,21 +1,25 @@
-// create a home view for the app with a login button and register button
-// that will redirect to the login and register pages respectively
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    console.log("Navigating to login page..."); // Added console log
+    navigate("/login");
+  };
+
+  const handleRegister = () => {
+    console.log("Navigating to register page..."); // Added console log
+    navigate("/register");
+  };
+
   return (
     <div>
-      <h1>Welcome to My Chat App</h1>
-      <p>Get started by logging in or signing up!</p>
-      <div>
-        <Link to="/login">
-          <button>Login</button>
-        </Link>
-        <Link to="/register">
-          <button>Sign Up</button>
-        </Link>
-      </div>
+      <h1>Welcome to the Chat Application</h1>
+      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleRegister}>Register</button>
+      {/* Additional content here */}
     </div>
   );
 };

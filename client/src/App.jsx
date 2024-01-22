@@ -1,13 +1,14 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
-import IndexPage from "./pages/IndexPage";
-import ChatroomPage from "./pages/ChatroomPage";
+import SignUpPage from "./pages/SignUpPage";
+import ChatDashPage from "./pages/ChatDashPage";
+import HomePage from "./pages/HomePage";
+
 import PrivateMessagesPage from "./pages/PrivateMessagesPage"; // Import your PrivateMessagesPage component
 import UserSearch from "./pages/UserSearch";
 import io from "socket.io-client";
+import ChatHeaderPage from "./pages/ChatHeaderPage";
 
 function App() {
   const [socket, setSocket] = React.useState(null);
@@ -46,21 +47,21 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<IndexPage />} exact />
+        <Route path="/" element={<HomePage />} exact />
         <Route
           path="/login"
           element={<LoginPage setupSocket={setupSocket} />}
           exact
         />
-        <Route path="/register" element={<RegisterPage />} exact />
+        <Route path="/register" element={<SignUpPage />} exact />
         <Route
           path="/dashboard"
-          element={<DashboardPage socket={socket} />}
+          element={<ChatHeaderPage socket={socket} />}
           exact
         />
         <Route
           path="/chatroom/:id"
-          element={<ChatroomPage socket={socket} />}
+          element={<ChatDashPage socket={socket} />}
           exact
         />
         <Route
