@@ -5,6 +5,8 @@
 [contributors-shield]: https://img.shields.io/badge/contributors-_1-blue?style=for-the-badge
 [contributors-url]: https://github.com/drewkybrown/MERN-CHAT-APP/graphs/contributors
 
+![](./client/pics/Home.png)
+
 <br />
 
 <!-- TABLE OF CONTENTS -->
