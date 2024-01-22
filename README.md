@@ -45,8 +45,9 @@ http://tinyurl.com/ywe9n8bc
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![Bcrypt.js](https://img.shields.io/badge/Bcrypt.js-darkred?style=for-the-badge)
 ![CookieParser](https://img.shields.io/badge/CookieParser-%20purple?style=for-the-badge)
-#TailwindCSS
-#Socket.io
+[![React](https://img.shields.io/badge/React-17.x-blue)](https://reactjs.org/)
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.x-orange)](https://socket.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-2.x-blue)](https://tailwindcss.com/)
 
 ## Getting Started
 
