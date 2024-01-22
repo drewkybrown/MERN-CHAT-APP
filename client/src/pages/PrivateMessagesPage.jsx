@@ -70,30 +70,63 @@ const PrivateMessagePage = ({ socket }) => {
   }, [socket]);
 
   return (
-    <div>
-      <h1>Private Messages with {recipient}</h1>
-      <div>
-        {privateMessages.map((message, i) => (
-          <div key={i}>
-            <span>
-              {message.sender === currentUser.username
-                ? "You"
-                : message.sender || "Anonymous"}
-              :
-            </span>{" "}
-            {message.content}
-          </div>
-        ))}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-tr from-pink-100 to-purple-100 p-6">
+      <h1 className="text-3xl font-bold text-gray-700 mb-6">
+        Private Messages with {recipient}
+      </h1>
+      <div
+        className="w-full max-w-2xl bg-white rounded-lg shadow p-6 mb-6 overflow-y-auto"
+        style={{ maxHeight: "60vh" }}
+      >
+        <div className="space-y-4">
+          {privateMessages.map((message, i) => (
+            <div
+              key={i}
+              className={`flex ${
+                message.sender === currentUser.username
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
+              <span className="font-semibold mr-2">
+                {message.sender === currentUser.username
+                  ? "You"
+                  : message.sender || "Anonymous"}
+                :
+              </span>
+              <span
+                className={`${
+                  message.sender === currentUser.username
+                    ? "text-blue-600"
+                    : "text-gray-700"
+                }`}
+              >
+                {message.content}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div>
+      <div className="w-full max-w-2xl flex items-center">
         <input
           type="text"
           placeholder="Recipient's username"
-          value={recipient} // Display recipient's username
+          value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
+          className="border border-gray-300 p-2 rounded-lg w-1/3 mr-2 focus:outline-none focus:ring focus:border-blue-400"
         />
-        <input type="text" ref={messageRef} placeholder="Type a message..." />
-        <button onClick={sendPrivateMessage}>Send</button>
+        <input
+          type="text"
+          ref={messageRef}
+          placeholder="Type a message..."
+          className="border border-gray-300 p-2 rounded-lg w-1/3 mr-2 focus:outline-none focus:ring focus:border-blue-400"
+        />
+        <button
+          onClick={sendPrivateMessage}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300"
+        >
+          Send
+        </button>
       </div>
     </div>
   );
