@@ -7,7 +7,6 @@
 
 <br />
 
-
 <!-- TABLE OF CONTENTS -->
 <details>
     <summary>Table of Contents</summary>
@@ -23,19 +22,21 @@
 </details>
 
 ## About the Project
+
 A MERN stack real-time messaging application, integrated with Socket.IO, offers an engaging platform for dynamic and instantaneous communication. This application enables users to create a personalized account, fostering a sense of community and ownership. Once registered, users have the flexibility to either create their own chat rooms or join existing ones, allowing them to dive into diverse conversations and connect with different user groups. The use of Socket.IO ensures seamless, real-time communication, making interactions swift and efficient. This application stands as an ideal solution for users seeking immediate and interactive communication, whether for personal connections, collaborative projects, or community engagements.
 
 ## Screenshots and Wireframe
+
 http://tinyurl.com/ywe9n8bc
 
-![](./screenshots/landing-page.png)
-![](./screenshots/signup.png)
-![](./screenshots/login.png)
-![](./screenshots/home.png)
-![](./screenshots/medical-records.png)
-
+![](./client/pics/login.png)
+![](./client/pics/dashboard.png)
+![](./client/pics/chat.png)
+![](./client/pics/user-search.png)
+![](./client/pics/private-message.png)
 
 ## Technologies Used
+
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
@@ -47,25 +48,23 @@ http://tinyurl.com/ywe9n8bc
 #TailwindCSS
 #Socket.io
 
-
-
-
 ## Getting Started
+
 🚀 Explore Chatcord!!: https://mern-chatto.netlify.app/
 
-* View the Trello Board: https://trello.com/b/l4wfH39p/mern-chat
+- View the Trello Board: https://trello.com/b/l4wfH39p/mern-chat
 
-* View the ERD for each Data Entity: http://tinyurl.com/bdheen2k
-
+- View the ERD for each Data Entity: http://tinyurl.com/bdheen2k
 
 ## Key Features
+
 1. Real-Time Messaging: Utilize Socket.IO for instant messaging, allowing users to send and receive messages without any delay.
 2. User Authentication: Implement secure user authentication for signing up and logging into the chat application.
 3. Chat History: Store and display chat history so users can view past conversations.
 4. Responsive Design: Ensure the chat application is fully responsive and works seamlessly across different devices and screen sizes.
 
-
 ## Next Steps and Future Enhancements
+
 1. Private and Group Chat Rooms: Offer the ability to create private one-on-one chat rooms or group chat rooms for multiple users.
 2. Online Presence Indicators: Show when users are online, offline, or busy.
 3. Typing Indicators: Display a notification when a user is typing a message in a chat room.
