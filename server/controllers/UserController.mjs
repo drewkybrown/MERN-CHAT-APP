@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import User from "../models/User.js"; // Adjust the import path as needed
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+
 import jwt from "jwt-then";
 
 // UserController.js
