@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { toast } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 
 const ChatDashPage = ({ socket }) => {
   const { id: chatroomId } = useParams();
@@ -46,6 +48,12 @@ const ChatDashPage = ({ socket }) => {
           ...response.data.reverse(),
           ...prevMessages,
         ]);
+        // Display a notification for each new message
+        response.data.forEach((message) => {
+          toast.info(
+            `New message from ${message.user.username}: ${message.message}`
+          );
+        });
       } else {
         setHasMoreMessages(false);
       }
@@ -101,6 +109,10 @@ const ChatDashPage = ({ socket }) => {
       const handleNewMessage = (message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
         console.log("New message received:", message);
+        // Display a notification for each new message
+        toast.info(
+          `New message from ${message.user.username}: ${message.message}`
+        );
       };
 
       socket.on("newMessage", handleNewMessage);

@@ -72,6 +72,23 @@ const ChatHeaderPage = () => {
         console.error("Error creating chatroom:", err);
       });
   };
+
+  // Function to count unread messages for a chatroom
+  const countUnreadMessages = (chatroomId) => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (
+      userData &&
+      userData.lastReadMessages &&
+      userData.lastReadMessages[chatroomId]
+    ) {
+      const lastReadTimestamp = userData.lastReadMessages[chatroomId];
+      // Compare last read timestamp with message timestamps and count unread messages
+      // Implement your logic here
+      return 0; // Replace with the actual count
+    }
+    return 0; // Default to 0 if no timestamp is recorded
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-gray-100">
       <div className="card w-full max-w-lg p-6 bg-white shadow-xl rounded-lg transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl">
@@ -123,6 +140,12 @@ const ChatHeaderPage = () => {
                   Join
                 </div>
               </Link>
+              {/* Display a notification badge if there are unread messages */}
+              {countUnreadMessages(chatroom._id) > 0 && (
+                <div className="notification-badge bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                  {countUnreadMessages(chatroom._id)}
+                </div>
+              )}
             </div>
           ))}
           <Link
