@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom"; // Import useNavigate and Link
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 
 const SignUpPage = () => {
   const usernameRef = React.createRef();
@@ -13,7 +15,7 @@ const SignUpPage = () => {
     const password = passwordRef.current.value;
     const name = nameRef.current.value;
 
-    console.log("Signing up user..."); // Added console log
+    console.log("Signing up user...");
 
     axios
       .post("http://localhost:3000/user/register", {
@@ -22,8 +24,11 @@ const SignUpPage = () => {
         name,
       })
       .then(() => {
-        console.log("User registered successfully!"); // Added console log
-        alert("User registered successfully!");
+        console.log("User registered successfully!");
+        toast.success("User registered successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
         navigate("/login");
       })
       .catch((err) => {
@@ -33,7 +38,7 @@ const SignUpPage = () => {
           err.response.data &&
           err.response.data.message
         ) {
-          console.error("Error:", err.response.data.message); // Added console log
+          console.error("Error:", err.response.data.message);
         }
       });
   };
