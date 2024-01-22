@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { toast } from "react-toastify"; // Import react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUpPage = () => {
   const usernameRef = React.createRef();
@@ -15,16 +15,18 @@ const SignUpPage = () => {
     const password = passwordRef.current.value;
     const name = nameRef.current.value;
 
-    console.log("Signing up user...");
+    const apiUrl =
+      typeof process !== "undefined" && process.env.REACT_APP_API_URL
+        ? process.env.REACT_APP_API_URL
+        : "http://localhost:3000";
 
     axios
-      .post("http://localhost:3000/user/register", {
+      .post(`${apiUrl}/user/register`, {
         username,
         password,
         name,
       })
       .then(() => {
-        console.log("User registered successfully!");
         toast.success("User registered successfully!", {
           position: "top-right",
           autoClose: 3000,
@@ -38,7 +40,10 @@ const SignUpPage = () => {
           err.response.data &&
           err.response.data.message
         ) {
-          console.error("Error:", err.response.data.message);
+          toast.error(err.response.data.message, {
+            position: "top-right",
+            autoClose: 3000,
+          });
         }
       });
   };

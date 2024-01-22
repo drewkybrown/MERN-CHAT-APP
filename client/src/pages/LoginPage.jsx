@@ -14,8 +14,13 @@ const LoginPage = (props) => {
 
     console.log("Logging in user...");
 
+    const apiUrl =
+      typeof process !== "undefined" && process.env.REACT_APP_API_URL
+        ? process.env.REACT_APP_API_URL
+        : "http://localhost:3000";
+
     axios
-      .post("http://localhost:3000/user/login", {
+      .post(`${apiUrl}/user/login`, {
         username,
         password,
       })

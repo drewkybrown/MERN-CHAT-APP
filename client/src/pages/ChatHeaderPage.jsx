@@ -16,6 +16,11 @@ const ChatHeaderPage = () => {
     }
   }, []);
 
+  const apiUrl =
+    typeof process !== "undefined" && process.env.REACT_APP_API_URL
+      ? process.env.REACT_APP_API_URL
+      : "http://localhost:3000";
+
   const logout = () => {
     // Clear user data from localStorage
     localStorage.removeItem("user");
@@ -29,7 +34,7 @@ const ChatHeaderPage = () => {
   const getChatrooms = () => {
     console.log("Fetching chatrooms...");
     axios
-      .get("http://localhost:3000/chatroom", {
+      .get(`${apiUrl}/chatroom`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("CC_Token"),
         },
@@ -55,7 +60,7 @@ const ChatHeaderPage = () => {
 
     axios
       .post(
-        "http://localhost:3000/chatroom",
+        `${apiUrl}/chatroom`,
         { name: chatroomName },
         {
           headers: {

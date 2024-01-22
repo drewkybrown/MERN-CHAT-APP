@@ -2,13 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
-import { toast } from "react-toastify"; // Import react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
+import { toast } from "react-toastify";
 
 const ChatDashPage = ({ socket }) => {
   const { id: chatroomId } = useParams();
   const navigate = useNavigate();
-
   const [chatroom, setChatroom] = useState({ name: "Loading..." });
   const [messages, setMessages] = useState([]);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
@@ -18,6 +16,11 @@ const ChatDashPage = ({ socket }) => {
   const [userToken] = useState(localStorage.getItem("CC_Token"));
   const [user, setUser] = useState(null);
   const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
+
+  const apiUrl =
+    typeof process !== "undefined" && process.env.REACT_APP_API_URL
+      ? process.env.REACT_APP_API_URL
+      : "http://localhost:3000";
 
   const sendMessage = () => {
     if (socket) {
@@ -35,7 +38,7 @@ const ChatDashPage = ({ socket }) => {
     try {
       console.log("Fetching messages for chatroom:", chatroomId);
       const response = await axios.get(
-        `http://localhost:3000/chatroom/${chatroomId}/messages?olderThanId=${olderThanId}`,
+        `${apiUrl}/chatroom/${chatroomId}/messages?olderThanId=${olderThanId}`,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -78,14 +81,11 @@ const ChatDashPage = ({ socket }) => {
     const fetchChatroomDetails = async () => {
       try {
         console.log("Fetching chatroom details for ID:", chatroomId);
-        const response = await axios.get(
-          `http://localhost:3000/chatroom/${chatroomId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
+        const response = await axios.get(`${apiUrl}/chatroom/${chatroomId}`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
         console.log("Chatroom details fetched:", response.data);
         setChatroom(response.data);
       } catch (error) {
@@ -102,7 +102,7 @@ const ChatDashPage = ({ socket }) => {
       setUser(userData);
       console.log("User data after parsing:", userData);
     }
-  }, [chatroomId, userToken]);
+  }, [chatroomId, userToken, apiUrl]);
 
   useEffect(() => {
     if (socket) {

@@ -4,8 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ChatDashPage from "./pages/ChatDashPage";
 import HomePage from "./pages/HomePage";
-
-import PrivateMessagesPage from "./pages/PrivateMessagesPage"; // Import your PrivateMessagesPage component
+import PrivateMessagesPage from "./pages/PrivateMessagesPage";
 import UserSearch from "./pages/UserSearch";
 import io from "socket.io-client";
 import ChatHeaderPage from "./pages/ChatHeaderPage";
@@ -14,25 +13,25 @@ function App() {
   const [socket, setSocket] = React.useState(null);
 
   const setupSocket = () => {
-    console.log("Setting up socket connection..."); // Added console log
     const token = localStorage.getItem("CC_Token");
     if (token && !socket) {
-      console.log("Connecting to socket server..."); // Added console log
-      const newSocket = io("http://localhost:3000", {
+      const socketUrl =
+        typeof process !== "undefined" && process.env.REACT_APP_API_URL
+          ? process.env.REACT_APP_API_URL
+          : "http://localhost:3000";
+      const newSocket = io(socketUrl, {
         query: {
           token: localStorage.getItem("CC_Token"),
         },
       });
 
       newSocket.on("disconnect", () => {
-        console.log("Socket disconnected. Attempting to reconnect..."); // Added console log
         setSocket(null);
         setTimeout(setupSocket, 3000);
       });
 
       newSocket.on("connect", () => {
-        console.log("Socket connected."); // Added console log
-        // Additional logic can be added here if needed
+        // Socket connected
       });
 
       setSocket(newSocket);
@@ -68,10 +67,9 @@ function App() {
           path="/private-messages/:userId"
           element={<PrivateMessagesPage socket={socket} />}
         />
-
         <Route
           path="/user-search"
-          element={<UserSearch socket={socket} />} // Add the UserSearch component
+          element={<UserSearch socket={socket} />}
           exact
         />
       </Routes>

@@ -5,9 +5,10 @@
   "type": "module",
   "main": "server.mjs",
   "scripts": {
-    "start": "nodemon server.mjs",
-    "dev": "nodemon server.mjs" 
+    "start": "node server.mjs",
+    "dev": "nodemon server.mjs"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",

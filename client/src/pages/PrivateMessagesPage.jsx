@@ -2,17 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import io from "socket.io-client";
 import axios from "axios";
-import { useParams } from "react-router-dom"; // Import useParams to get recipient's user ID
+import { useParams } from "react-router-dom";
 
 const PrivateMessagePage = ({ socket }) => {
   const [privateMessages, setPrivateMessages] = useState([]);
   const messageRef = useRef();
-  const [recipient, setRecipient] = useState(""); // Store the recipient's username
+  const [recipient, setRecipient] = useState("");
   const [userToken] = useState(localStorage.getItem("CC_Token"));
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const [loadedMessages, setLoadedMessages] = useState(false);
 
-  const { recipientUserId } = useParams(); // Get recipient's user ID from the URL
+  const { recipientUserId } = useParams();
 
   const sendPrivateMessage = () => {
     if (socket) {
@@ -21,7 +21,7 @@ const PrivateMessagePage = ({ socket }) => {
       if (messageContent && currentUser && currentUser.username) {
         socket.emit("private_message", {
           sender: currentUser.username,
-          recipient: recipientUserId, // Use recipient's user ID
+          recipient: recipientUserId,
           content: messageContent,
         });
         messageRef.current.value = "";
@@ -31,11 +31,16 @@ const PrivateMessagePage = ({ socket }) => {
 
   useEffect(() => {
     if (socket && !loadedMessages) {
+      const apiUrl =
+        typeof process !== "undefined" && process.env.REACT_APP_API_URL
+          ? process.env.REACT_APP_API_URL
+          : "http://localhost:3000";
+
       const fetchPrivateMessages = async () => {
         try {
           console.log("Fetching private messages...");
           const response = await axios.get(
-            `http://localhost:3000/private-messages/${recipientUserId}`, // Use recipient's user ID
+            `${apiUrl}/private-messages/${recipientUserId}`,
             {
               headers: {
                 Authorization: `Bearer ${userToken}`,
@@ -44,7 +49,7 @@ const PrivateMessagePage = ({ socket }) => {
           );
           console.log("Private messages fetched successfully!");
           setPrivateMessages(response.data);
-          setRecipient(recipientUserId); // Set recipient to recipientUserId
+          setRecipient(recipientUserId);
           setLoadedMessages(true);
         } catch (error) {
           console.error("Error fetching private messages:", error);

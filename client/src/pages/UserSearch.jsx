@@ -11,22 +11,21 @@ const UserSearch = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     setError("");
-    console.log("Search initiated with term:", searchTerm); // Added console log
     try {
-      const response = await axios.get(`http://localhost:3000/user/search`, {
+      const apiUrl =
+        typeof process !== "undefined" && process.env.REACT_APP_API_URL
+          ? process.env.REACT_APP_API_URL
+          : "http://localhost:3000";
+      const response = await axios.get(`${apiUrl}/user/search`, {
         params: { search: searchTerm },
       });
-      console.log("Search results:", response.data); // Added console log
       setSearchResults(response.data);
     } catch (error) {
-      console.error("Search failed:", error);
       setError("Search failed. Please try again.");
     }
   };
 
   const initiateConversation = (userId, username) => {
-    // Use both userId and username when navigating to private messages
-    console.log("Initiating conversation with user:", username); // Added console log
     navigate(`/private-messages/${userId}`, { state: { username } });
   };
 
