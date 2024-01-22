@@ -27,7 +27,7 @@ const ChatDashPage = ({ socket }) => {
   useEffect(() => {
     const fetchChatroomDetails = async () => {
       try {
-        console.log("Fetching chatroom details for:", chatroomId);
+        console.log("Fetching chatroom details for ID:", chatroomId);
         const response = await axios.get(
           `http://localhost:3000/chatroom/${chatroomId}`,
           {
@@ -36,7 +36,7 @@ const ChatDashPage = ({ socket }) => {
             },
           }
         );
-        console.log("Chatroom details:", response.data);
+        console.log("Chatroom details fetched:", response.data);
         setChatroom(response.data);
       } catch (error) {
         console.error("Error fetching chatroom details:", error);

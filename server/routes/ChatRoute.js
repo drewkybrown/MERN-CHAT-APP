@@ -5,12 +5,16 @@ import {
   getAllChatrooms,
   createChatroom,
   getChatroomMessages,
+  getChatroomById,
 } from "../controllers/ChatController.mjs";
 
 const router = Router();
 
 // Place specific routes above the more general ones
 router.get("/:chatroomId/messages", auth, getChatroomMessages);
+
+// Route to get a single chatroom by ID
+router.get("/:chatroomId", getChatroomById);
 
 // General routes for chatrooms
 router.get("/", auth, (req, res) => {

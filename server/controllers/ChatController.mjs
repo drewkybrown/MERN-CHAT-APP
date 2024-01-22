@@ -12,6 +12,29 @@ export const getAllChatrooms = async (req, res) => {
   }
 };
 
+// Function to get a single chatroom by ID
+export const getChatroomById = async (req, res) => {
+  try {
+    const chatroomId = req.params.chatroomId;
+    console.log(
+      "Received GET request to get chatroom details for:",
+      chatroomId
+    );
+
+    const chatroom = await Chat.findById(chatroomId);
+
+    if (!chatroom) {
+      console.log(`Chatroom with ID ${chatroomId} not found.`);
+      return res.status(404).json({ error: "Chatroom not found" });
+    }
+
+    res.json(chatroom);
+  } catch (error) {
+    console.error("Error while getting chatroom details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 export const createChatroom = async (req, res) => {
   try {
     console.log("Received POST request to create a chatroom.");
