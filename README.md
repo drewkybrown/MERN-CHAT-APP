@@ -1,5 +1,7 @@
 <a name="readme-top"></a>
 
+<h1>Welcome to Chatcord!</h1>
+
 [contributors-shield]: https://img.shields.io/badge/contributors-_1-blue?style=for-the-badge
 [contributors-url]: https://github.com/drewkybrown/MERN-CHAT-APP/graphs/contributors
 
