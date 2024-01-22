@@ -9,9 +9,13 @@ const ChatDashPage = ({ socket }) => {
 
   const [chatroom, setChatroom] = useState({ name: "Loading..." });
   const [messages, setMessages] = useState([]);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const messageRef = useRef();
   const [userToken] = useState(localStorage.getItem("CC_Token"));
   const [user, setUser] = useState(null);
+  const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
 
   const sendMessage = () => {
     if (socket) {
@@ -21,6 +25,44 @@ const ChatDashPage = ({ socket }) => {
         message: messageRef.current.value,
       });
       messageRef.current.value = "";
+    }
+  };
+
+  const fetchMessages = async (olderThanId = "") => {
+    setLoadingOlderMessages(true);
+    try {
+      console.log("Fetching messages for chatroom:", chatroomId);
+      const response = await axios.get(
+        `http://localhost:3000/chatroom/${chatroomId}/messages?olderThanId=${olderThanId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      console.log("Messages fetched:", response.data);
+      if (response.data.length > 0) {
+        setMessages((prevMessages) => [
+          ...response.data.reverse(),
+          ...prevMessages,
+        ]);
+      } else {
+        setHasMoreMessages(false);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+    setLoadingOlderMessages(false);
+  };
+
+  const handleScroll = () => {
+    if (
+      messagesContainerRef.current.scrollTop === 0 &&
+      hasMoreMessages &&
+      !loadingOlderMessages
+    ) {
+      const oldestMessageId = messages[0]._id;
+      fetchMessages(oldestMessageId);
     }
   };
 
@@ -41,24 +83,6 @@ const ChatDashPage = ({ socket }) => {
       } catch (error) {
         console.error("Error fetching chatroom details:", error);
         setChatroom({ name: "Unable to load chatroom name" });
-      }
-    };
-
-    const fetchMessages = async () => {
-      try {
-        console.log("Fetching messages for chatroom:", chatroomId);
-        const response = await axios.get(
-          `http://localhost:3000/chatroom/${chatroomId}/messages`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
-        console.log("Messages:", response.data);
-        setMessages(response.data);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
       }
     };
 
@@ -91,20 +115,24 @@ const ChatDashPage = ({ socket }) => {
     }
   }, [chatroomId, socket]);
 
+  useEffect(() => {
+    // Auto-scroll to bottom when new messages are added
+    if (!loadingOlderMessages) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, loadingOlderMessages]);
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">{chatroom.name}</h1>
-      <div className="space-y-4">
-        {messages.map((message, i) => {
-          console.log(
-            "Rendering message",
-            i,
-            "User:",
-            user?.name,
-            "Sender:",
-            message.user.username
-          );
-          return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">{chatroom.name}</h1>
+      <div
+        className="w-full max-w-2xl bg-white rounded shadow p-4 overflow-y-auto"
+        style={{ maxHeight: "70vh" }}
+        ref={messagesContainerRef}
+        onScroll={handleScroll}
+      >
+        <div className="space-y-4">
+          {messages.map((message, i) => (
             <div
               key={i}
               className={`flex ${
@@ -115,7 +143,7 @@ const ChatDashPage = ({ socket }) => {
             >
               <div
                 className={`max-w-xs p-3 rounded ${
-                  message.user.username === user?.name
+                  message.user.username === user?.username
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-700"
                 }`}
@@ -124,29 +152,31 @@ const ChatDashPage = ({ socket }) => {
                 <div>{message.message}</div>
               </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
+        <div ref={messagesEndRef} />
       </div>
-      <div className="mt-4">
-        <p>Welcome, {user ? user.name : "Guest"}!</p>
+      <div className="w-full max-w-2xl mt-4 flex flex-col items-center">
         <input
           type="text"
           ref={messageRef}
           placeholder="Type a message..."
-          className="border p-2 rounded mr-2 w-full"
+          className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring focus:border-blue-300"
         />
-        <button
-          onClick={sendMessage}
-          className="bg-blue-500 text-white px-4 py-2 rounded mr-2 mt-2"
-        >
-          Send
-        </button>
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="bg-red-500 text-white px-4 py-2 rounded mt-2"
-        >
-          Leave Chat Room
-        </button>
+        <div className="mt-2 flex space-x-2">
+          <button
+            onClick={sendMessage}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            Send
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+          >
+            Leave Chat Room
+          </button>
+        </div>
       </div>
     </div>
   );

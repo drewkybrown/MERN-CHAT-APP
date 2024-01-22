@@ -39,45 +39,76 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="card">
-      <div className="cardHeader">Register</div>
-      <div className="cardBody">
-        <div className="inputGroup">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            placeholder="Your Username"
-            ref={usernameRef}
-          />
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="card w-full max-w-sm p-6 bg-white shadow-lg rounded">
+        <div className="cardHeader text-2xl font-semibold text-gray-800 mb-4">
+          Register
         </div>
-        <div className="inputGroup">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Your Password"
-            ref={passwordRef}
-          />
-        </div>
-        <div className="inputGroup">
-          <label htmlFor="name">Name</label>
+        <div className="inputGroup mb-6">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Name
+          </label>
           <input
             type="text"
             name="name"
             id="name"
             placeholder="Your Name"
             ref={nameRef}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
           />
         </div>
-        <button onClick={SignUpUser}>Register</button>
+        <div className="cardBody">
+          <div className="inputGroup mb-4">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              placeholder="Your Username"
+              ref={usernameRef}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <div className="inputGroup mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Your Password"
+              ref={passwordRef}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
 
-        {/* Add a button to navigate back to the Login page */}
-        <Link to="/login">
-          <button>Already a Member? Login</button>
-        </Link>
+          <button
+            onClick={SignUpUser}
+            className="w-full px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 mb-4"
+          >
+            Register
+          </button>
+          <div className="text-center">
+            <Link
+              to="/login"
+              className="text-sm text-blue-500 hover:text-blue-600"
+            >
+              Already a Member? Login
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
