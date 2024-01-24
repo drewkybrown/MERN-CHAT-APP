@@ -1,4 +1,4 @@
-// server/sockets.js
+// sockets.js
 
 import jwt from "jwt-then";
 import User from "./models/User.js";
@@ -10,12 +10,12 @@ export function setupSockets(io) {
   // Socket.IO authentication middleware
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.query.token; // Token sent from client during socket connection
+      const token = socket.handshake.query.token;
       if (!token) {
         throw new Error("Unauthorized: No token provided");
       }
       const payload = await jwt.verify(token, process.env.SECRET);
-      socket.userId = payload.id; // Attach the user ID to the socket object
+      socket.userId = payload.id;
       next();
     } catch (err) {
       console.error("Socket Authentication Error:", err);
@@ -65,39 +65,36 @@ export function setupSockets(io) {
       }
     });
 
-    socket.on("private_message", async (data) => {
+    socket.on("private_message", async ({ senderId, recipientId, content }) => {
       try {
-        const { senderUsername, recipientUsername, content } = data;
+        console.log(
+          "Received private message:",
+          content,
+          "from",
+          senderId,
+          "to",
+          recipientId
+        );
 
-        console.log("Received private message:", data);
+        // Verify sender and recipient
+        const senderExists = await User.exists({ _id: senderId });
+        const recipientExists = await User.exists({ _id: recipientId });
 
-        const senderUser = await User.findOne({ username: senderUsername });
-        const recipientUser = await User.findOne({
-          username: recipientUsername,
-        });
-
-        if (!senderUser || !recipientUser) {
+        if (!senderExists || !recipientExists) {
           console.error("Sender or recipient not found");
           return;
         }
 
         const newPrivateMessage = new PrivateMessage({
-          sender: senderUser._id,
-          recipient: recipientUser._id,
+          sender: senderId,
+          recipient: recipientId,
           content,
         });
 
         await newPrivateMessage.save();
 
-        io.to(senderUser._id).emit("private_message", newPrivateMessage);
-        io.to(recipientUser._id).emit("private_message", newPrivateMessage);
-
-        console.log(
-          "Private message sent from",
-          senderUsername,
-          "to",
-          recipientUsername
-        );
+        io.to(recipientId).emit("private_message", { senderId, content });
+        console.log("Private message sent from", senderId, "to", recipientId);
       } catch (error) {
         console.error("Error handling private message:", error);
       }

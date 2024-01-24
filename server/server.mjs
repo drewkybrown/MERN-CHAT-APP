@@ -6,7 +6,7 @@ import http from "http";
 import express from "express";
 import { Server as SocketServer } from "socket.io";
 import app from "./app.js"; // Ensure this path is correct
-import privateMessageRoute from "./routes/privateMessageRoute.js"; // Ensure this path is correct
+// import privateMessageRoute from "./routes/privateMessageRoute.js"; // Ensure this path is correct
 import { setupSockets } from "./sockets.js"; // Updated import statement
 
 dotenv.config();
@@ -43,7 +43,7 @@ app.get("/checkStatus", (req, res) => {
   res.json({ status: serverStatus });
 });
 
-app.use("/private-message", privateMessageRoute); // Include the new private messaging route
+// app.use("/private-message", privateMessageRoute); // Include the new private messaging route
 
 server.listen(port, () => {
   serverStatus = "running";

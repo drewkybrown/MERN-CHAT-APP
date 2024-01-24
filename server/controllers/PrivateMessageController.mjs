@@ -44,24 +44,36 @@ export async function sendPrivateMessage(req, res) {
   }
 }
 
-// Function to retrieve private messages for a user
+// Function to retrieve private messages between two users
 export async function getPrivateMessages(req, res) {
   try {
-    const userId = req.params.userId;
-    console.log(
-      "Received GET request to get private messages for user:",
-      userId
-    );
+    const { userId, otherUserId } = req.params;
+    const messages = await PrivateMessage.find({
+      $or: [
+        { sender: userId, recipient: otherUserId },
+        { sender: otherUserId, recipient: userId },
+      ],
+    }).sort({ createdAt: 1 }); // Sort by creation time
 
-    // Retrieve and send private messages for the user
-    const messages = await PrivateMessage.find({ recipient: userId });
-
-    console.log("Private messages retrieved successfully"); // Added console log
-    res.status(200).json(messages);
+    res.json(messages);
   } catch (error) {
     console.error("Error while retrieving private messages:", error);
     res
       .status(500)
       .json({ error: "An error occurred while retrieving private messages" });
+  }
+}
+
+// Function to search for users
+export async function searchUsers(req, res) {
+  try {
+    const searchTerm = req.query.username;
+    const users = await User.find({
+      username: new RegExp(searchTerm, "i"),
+    }).select("username _id");
+    res.json(users);
+  } catch (error) {
+    console.error("Error while searching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
