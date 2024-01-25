@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const LoginPage = (props) => {
   const usernameRef = React.createRef();
@@ -13,11 +13,10 @@ const LoginPage = (props) => {
     const password = passwordRef.current.value;
 
     console.log("Logging in user...");
+    console.log("Username:", username); // Log username
+    console.log("Password:", password); // Log password
 
-    const apiUrl =
-      typeof process !== "undefined" && process.env.REACT_APP_API_URL
-        ? process.env.REACT_APP_API_URL
-        : "http://localhost:3000";
+    const apiUrl = import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
 
     axios
       .post(`${apiUrl}/user/login`, {
@@ -94,13 +93,13 @@ const LoginPage = (props) => {
             Login
           </button>
           <p className="text-sm text-center text-gray-600">
-            Not a member?
-            <a
-              href="/register"
+            Not a member?{" "}
+            <Link
+              to="/register"
               className="text-blue-500 hover:text-blue-600 ml-1"
             >
               Register here
-            </a>
+            </Link>
           </p>
         </div>
       </div>

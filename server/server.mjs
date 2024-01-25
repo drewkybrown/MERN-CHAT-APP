@@ -1,13 +1,10 @@
-// server/server.mjs
-
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import http from "http";
 import express from "express";
 import { Server as SocketServer } from "socket.io";
-import app from "./app.js"; // Ensure this path is correct
-// import privateMessageRoute from "./routes/privateMessageRoute.js"; // Ensure this path is correct
-import { setupSockets } from "./sockets.js"; // Updated import statement
+import app from "./app.js";
+import { setupSockets } from "./sockets.js";
 
 dotenv.config();
 
@@ -43,8 +40,6 @@ app.get("/checkStatus", (req, res) => {
   res.json({ status: serverStatus });
 });
 
-// app.use("/private-message", privateMessageRoute); // Include the new private messaging route
-
 server.listen(port, () => {
   serverStatus = "running";
   console.log(`Server is running on port ${port}`);
@@ -55,4 +50,5 @@ server.on("error", (error) => {
   console.error(`Server failed to start: ${error}`);
 });
 
-export default server;
+// Add console.log statements as needed for debugging
+console.log("Server file executed."); // For checking if the server file is executed

@@ -5,12 +5,12 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    console.log("Navigating to login page..."); // Added console log
+    console.log("Navigating to login page...");
     navigate("/login");
   };
 
   const handleRegister = () => {
-    console.log("Navigating to register page..."); // Added console log
+    console.log("Navigating to register page...");
     navigate("/register");
   };
 

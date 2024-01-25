@@ -16,10 +16,7 @@ const ChatHeaderPage = () => {
     }
   }, []);
 
-  const apiUrl =
-    typeof process !== "undefined" && process.env.REACT_APP_API_URL
-      ? process.env.REACT_APP_API_URL
-      : "http://localhost:3000";
+  const apiUrl = import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
 
   const logout = () => {
     // Clear user data from localStorage

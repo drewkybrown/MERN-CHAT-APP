@@ -17,10 +17,7 @@ const ChatDashPage = ({ socket }) => {
   const [user, setUser] = useState(null);
   const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
 
-  const apiUrl =
-    typeof process !== "undefined" && process.env.REACT_APP_API_URL
-      ? process.env.REACT_APP_API_URL
-      : "http://localhost:3000";
+  const apiUrl = import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
 
   const sendMessage = () => {
     if (socket) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -8,17 +8,16 @@ import PrivateMessagesPage from "./pages/PrivateMessagesPage";
 import UserSearch from "./pages/UserSearch";
 import io from "socket.io-client";
 import ChatHeaderPage from "./pages/ChatHeaderPage";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
-  const [socket, setSocket] = React.useState(null);
+  const [socket, setSocket] = useState(null);
 
   const setupSocket = () => {
     const token = localStorage.getItem("CC_Token");
     if (token && !socket) {
       const socketUrl =
-        typeof process !== "undefined" && process.env.REACT_APP_API_URL
-          ? process.env.REACT_APP_API_URL
-          : "http://localhost:3000";
+        import.meta.env.REACT_APP_API_URL || "http://localhost:3000"; // Use the environment variable or localhost:3000
       const newSocket = io(socketUrl, {
         query: {
           token: localStorage.getItem("CC_Token"),
@@ -38,9 +37,8 @@ function App() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setupSocket();
-    // eslint-disable-next-line
   }, []);
 
   return (
@@ -64,7 +62,7 @@ function App() {
           exact
         />
         <Route
-          path="/private-messages/:userId"
+          path="/private-messages/:loggedInUserId/:selectedUserId"
           element={<PrivateMessagesPage socket={socket} />}
         />
         <Route
@@ -72,6 +70,8 @@ function App() {
           element={<UserSearch socket={socket} />}
           exact
         />
+        <Route path="*" element={<ErrorPage />} />{" "}
+        {/* Catch-all route for errors */}
       </Routes>
     </BrowserRouter>
   );

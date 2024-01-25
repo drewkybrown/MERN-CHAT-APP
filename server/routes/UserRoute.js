@@ -1,22 +1,18 @@
 import { Router } from "express";
-import { register, login } from "../controllers/UserController.mjs"; // Use named imports
-import { searchUsers } from "../controllers/UserController.mjs"; // Import the new searchUsers function
+import {
+  register,
+  login,
+  searchUsers,
+} from "../controllers/UserController.mjs";
+import auth from "../middlewares/auth.mjs"; // Import the middleware and name it auth for clarity
 
 const router = Router();
 
-router.get("/search", (req, res) => {
-  console.log("Received GET request to /user/search"); // Added console log
-  searchUsers(req, res);
-});
+// Protected route for searching users
+router.get("/search", auth, searchUsers);
 
-router.post("/register", (req, res) => {
-  console.log("Received POST request to /user/register"); // Added console log
-  register(req, res);
-});
-
-router.post("/login", (req, res) => {
-  console.log("Received POST request to /user/login"); // Added console log
-  login(req, res);
-});
+// Public routes for registration and login
+router.post("/register", register);
+router.post("/login", login);
 
 export default router;

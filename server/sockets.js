@@ -1,9 +1,6 @@
-// sockets.js
-
 import jwt from "jwt-then";
 import User from "./models/User.js";
 import Message from "./models/Message.js";
-import Chatroom from "./models/Chat.js";
 import PrivateMessage from "./models/PrivateMessage.js";
 
 export function setupSockets(io) {
@@ -12,10 +9,16 @@ export function setupSockets(io) {
     try {
       const token = socket.handshake.query.token;
       if (!token) {
-        throw new Error("Unauthorized: No token provided");
+        throw new Error("No token provided");
       }
+
       const payload = await jwt.verify(token, process.env.SECRET);
-      socket.userId = payload.id;
+      const user = await User.findById(payload.id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      socket.userId = user._id;
       next();
     } catch (err) {
       console.error("Socket Authentication Error:", err);
@@ -27,23 +30,9 @@ export function setupSockets(io) {
   io.on("connection", (socket) => {
     console.log("Socket connected:", socket.userId);
 
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected:", socket.userId);
-    });
-
-    socket.on("joinRoom", ({ chatroomId }) => {
-      socket.join(chatroomId);
-      console.log("A user joined chatroom:", chatroomId);
-    });
-
-    socket.on("leaveRoom", ({ chatroomId }) => {
-      socket.leave(chatroomId);
-      console.log("A user left chatroom:", chatroomId);
-    });
-
+    // Chatroom message event
     socket.on("chatroomMessage", async ({ chatroomId, message }) => {
       if (message.trim().length > 0) {
-        const user = await User.findOne({ _id: socket.userId });
         const newMessage = new Message({
           chatroom: chatroomId,
           user: socket.userId,
@@ -57,32 +46,19 @@ export function setupSockets(io) {
         io.to(chatroomId).emit("newMessage", populatedMessage);
 
         console.log(
-          "Message sent by user:",
-          socket.userId,
-          "in chatroom:",
-          chatroomId
+          "Message sent in chatroom:",
+          chatroomId,
+          "by user:",
+          socket.userId
         );
       }
     });
 
+    // Private message event
     socket.on("private_message", async ({ senderId, recipientId, content }) => {
       try {
-        console.log(
-          "Received private message:",
-          content,
-          "from",
-          senderId,
-          "to",
-          recipientId
-        );
-
-        // Verify sender and recipient
-        const senderExists = await User.exists({ _id: senderId });
-        const recipientExists = await User.exists({ _id: recipientId });
-
-        if (!senderExists || !recipientExists) {
-          console.error("Sender or recipient not found");
-          return;
+        if (!senderId || !recipientId || !content.trim().length) {
+          throw new Error("Invalid private message data");
         }
 
         const newPrivateMessage = new PrivateMessage({
@@ -90,7 +66,6 @@ export function setupSockets(io) {
           recipient: recipientId,
           content,
         });
-
         await newPrivateMessage.save();
 
         io.to(recipientId).emit("private_message", { senderId, content });
@@ -98,6 +73,10 @@ export function setupSockets(io) {
       } catch (error) {
         console.error("Error handling private message:", error);
       }
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected:", socket.userId);
     });
   });
 }

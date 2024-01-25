@@ -14,7 +14,7 @@ const router = Router();
 router.get("/:chatroomId/messages", auth, getChatroomMessages);
 
 // Route to get a single chatroom by ID
-router.get("/:chatroomId", getChatroomById);
+router.get("/:chatroomId", auth, getChatroomById);
 
 // General routes for chatrooms
 router.get("/", auth, (req, res) => {

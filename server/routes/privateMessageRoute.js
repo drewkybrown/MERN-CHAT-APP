@@ -5,7 +5,7 @@ import {
   getPrivateMessages,
   searchUsers,
 } from "../controllers/PrivateMessageController.mjs";
-import auth from "../middlewares/auth.mjs"; // Import your auth middleware
+import auth from "../middlewares/auth.mjs"; // Import your auth middleware correctly
 
 const router = express.Router();
 

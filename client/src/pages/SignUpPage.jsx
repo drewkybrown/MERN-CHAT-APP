@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useRef } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SignUpPage = () => {
-  const usernameRef = React.createRef();
-  const passwordRef = React.createRef();
-  const nameRef = React.createRef();
+  const usernameRef = useRef();
+  const passwordRef = useRef();
+  const nameRef = useRef();
   const navigate = useNavigate();
 
   const SignUpUser = () => {
@@ -15,10 +15,7 @@ const SignUpPage = () => {
     const password = passwordRef.current.value;
     const name = nameRef.current.value;
 
-    const apiUrl =
-      typeof process !== "undefined" && process.env.REACT_APP_API_URL
-        ? process.env.REACT_APP_API_URL
-        : "http://localhost:3000";
+    const apiUrl = import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
 
     axios
       .post(`${apiUrl}/user/register`, {
