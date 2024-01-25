@@ -15,9 +15,11 @@ function App() {
 
   const setupSocket = () => {
     const token = localStorage.getItem("CC_Token");
+    console.log("Auth Token (Client-Side):", token); // Add this line to log the token
+
     if (token && !socket) {
       const socketUrl =
-        import.meta.env.REACT_APP_API_URL || "http://localhost:3000"; // Use the environment variable or localhost:3000
+        import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
       const newSocket = io(socketUrl, {
         query: {
           token: localStorage.getItem("CC_Token"),
@@ -30,7 +32,7 @@ function App() {
       });
 
       newSocket.on("connect", () => {
-        // Socket connected
+        console.log("Socket connected (Client-Side)"); // Add this line to log the socket connection
       });
 
       setSocket(newSocket);
@@ -40,6 +42,10 @@ function App() {
   useEffect(() => {
     setupSocket();
   }, []);
+
+  // Fetch the loggedInUserId from local storage
+  const loggedInUserId = localStorage.getItem("loggedInUserId");
+  console.log("Logged In User ID (Client-Side):", loggedInUserId); // Add this line to log the loggedInUserId
 
   return (
     <BrowserRouter>
@@ -63,11 +69,13 @@ function App() {
         />
         <Route
           path="/private-messages/:loggedInUserId/:selectedUserId"
-          element={<PrivateMessagesPage socket={socket} />}
+          element={<PrivateMessagesPage />}
         />
         <Route
           path="/user-search"
-          element={<UserSearch socket={socket} />}
+          element={
+            <UserSearch loggedInUserId={loggedInUserId} socket={socket} />
+          }
           exact
         />
         <Route path="*" element={<ErrorPage />} />{" "}

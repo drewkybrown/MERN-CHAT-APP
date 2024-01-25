@@ -30,6 +30,7 @@ const UserSearch = ({ loggedInUserId }) => {
       setSearchResults(response.data);
     } catch (error) {
       console.error("Error searching users:", error);
+      console.error("Error details:", error.response);
     }
   };
 

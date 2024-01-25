@@ -8,13 +8,16 @@ export function setupSockets(io) {
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.query.token;
+      console.log("Received token:", token); // Log received token
       if (!token) {
+        console.error("No token provided"); // Log error if no token is provided
         throw new Error("No token provided");
       }
 
       const payload = await jwt.verify(token, process.env.SECRET);
       const user = await User.findById(payload.id);
       if (!user) {
+        console.error("User not found"); // Log error if user is not found
         throw new Error("User not found");
       }
 
@@ -57,7 +60,17 @@ export function setupSockets(io) {
     // Private message event
     socket.on("private_message", async ({ senderId, recipientId, content }) => {
       try {
+        console.log(
+          "Received private message:",
+          content,
+          "from",
+          senderId,
+          "to",
+          recipientId
+        );
+
         if (!senderId || !recipientId || !content.trim().length) {
+          console.error("Invalid private message data"); // Log error for invalid private message data
           throw new Error("Invalid private message data");
         }
 

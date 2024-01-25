@@ -30,8 +30,10 @@ const LoginPage = (props) => {
         // Store token and other necessary user data
         localStorage.setItem("CC_Token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user)); // Assuming 'user' data is part of the response
+        localStorage.setItem("loggedInUserId", response.data.user._id); // Assuming '_id' is part of the user data
 
         console.log("User logged in successfully!", response.data.user);
+        console.log("Token:", response.data.token); // Log the token
         navigate("/dashboard");
         props.setupSocket();
       })
