@@ -31,7 +31,7 @@ const ChatHeaderPage = () => {
 
   const getChatrooms = () => {
     axios
-      .get(`${apiUrl}/chatroom`, {
+      .get(`${apiUrl}/api/chatroom`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("CC_Token"),
         },
@@ -53,7 +53,7 @@ const ChatHeaderPage = () => {
 
     axios
       .post(
-        `${apiUrl}/chatroom`,
+        `${apiUrl}/api/chatroom`,
         { name: chatroomName },
         {
           headers: {
@@ -87,33 +87,63 @@ const ChatHeaderPage = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className="p-4 h-full bg-blue-500">
+      <div className="text-white">
         Welcome, {user ? user.name : "Guest"}!
-        <button onClick={logout}>Logout</button>
+        <button
+          onClick={logout}
+          className="px-3 py-1 bg-red-600 rounded hover:bg-red-700 mt-4"
+        >
+          Logout
+        </button>
       </div>
-      <div>
-        <label htmlFor="chatroomName">Chatroom Name</label>
-        <input
-          type="text"
-          name="chatroomName"
-          id="chatroomName"
-          ref={chatroomNameRef}
-          placeholder="Chatroom Name"
-        />
+      <div className="mt-4">
+        <label
+          htmlFor="chatroomName"
+          className="block text-white font-medium text-sm mb-1"
+        >
+          Chatroom Name
+        </label>
+        <div className="flex">
+          <input
+            type="text"
+            name="chatroomName"
+            id="chatroomName"
+            ref={chatroomNameRef}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+            placeholder="Enter Chatroom Name"
+          />
+          <button
+            onClick={createChatroom}
+            className="ml-2 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring focus:bg-blue-600"
+          >
+            Create
+          </button>
+        </div>
       </div>
-      <button onClick={createChatroom}>Create Chatroom</button>
-      <div>
+      <div className="mt-4 h-full">
         {chatrooms.map((chatroom) => (
           <div key={chatroom._id}>
-            {chatroom.name}
-            <Link to={"/chatroom/" + chatroom._id}>Join</Link>
+            <span className="text-white mr-2">{chatroom.name}</span>
+            <Link
+              to={"/chatroom/" + chatroom._id}
+              className="text-white-500 hover:text-blue-600"
+            >
+              Join
+            </Link>
             {countUnreadMessages(chatroom._id) > 0 && (
-              <div>{countUnreadMessages(chatroom._id)}</div>
+              <span className="text-red-500 ml-2">
+                {countUnreadMessages(chatroom._id)}
+              </span>
             )}
           </div>
         ))}
-        <Link to="/user-search">Private Messages</Link>
+        <Link
+          to="/user-search"
+          className="mt-4 text-blue-500 hover:text-blue-600 block"
+        >
+          Private Messages
+        </Link>
       </div>
     </div>
   );

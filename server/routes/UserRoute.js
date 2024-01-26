@@ -3,7 +3,7 @@ import {
   register,
   login,
   searchUsers,
-} from "../controllers/UserController.mjs";
+} from "../controllers/userController.mjs";
 import auth from "../middlewares/auth.mjs"; // Import the middleware and name it auth for clarity
 
 const router = Router();

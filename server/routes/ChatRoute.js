@@ -6,7 +6,7 @@ import {
   createChatroom,
   getChatroomMessages,
   getChatroomById,
-} from "../controllers/ChatController.mjs";
+} from "../controllers/chatController.mjs";
 
 const router = Router();
 
