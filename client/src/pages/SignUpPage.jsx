@@ -15,7 +15,8 @@ const SignUpPage = () => {
     const password = passwordRef.current.value;
     const name = nameRef.current.value;
 
-    const apiUrl = import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
+    const apiUrl =
+      import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:3000";
 
     axios
       .post(`${apiUrl}/user/register`, {

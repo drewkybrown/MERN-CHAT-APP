@@ -4,8 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ChatDashPage from "./pages/ChatDashPage";
 import HomePage from "./pages/HomePage";
-import PrivateMessagesPage from "./pages/PrivateMessagesPage";
-import UserSearch from "./pages/UserSearch";
+
 import io from "socket.io-client";
 import ChatHeaderPage from "./pages/ChatHeaderPage";
 import ErrorPage from "./pages/ErrorPage";
@@ -15,11 +14,9 @@ function App() {
 
   const setupSocket = () => {
     const token = localStorage.getItem("CC_Token");
-    console.log("Auth Token (Client-Side):", token); // Add this line to log the token
-
     if (token && !socket) {
       const socketUrl =
-        import.meta.env.REACT_APP_API_URL || "http://localhost:3000";
+        import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:3000"; // Use the environment variable or localhost:3000
       const newSocket = io(socketUrl, {
         query: {
           token: localStorage.getItem("CC_Token"),
@@ -32,7 +29,7 @@ function App() {
       });
 
       newSocket.on("connect", () => {
-        console.log("Socket connected (Client-Side)"); // Add this line to log the socket connection
+        // Socket connected
       });
 
       setSocket(newSocket);
@@ -42,10 +39,6 @@ function App() {
   useEffect(() => {
     setupSocket();
   }, []);
-
-  // Fetch the loggedInUserId from local storage
-  const loggedInUserId = localStorage.getItem("loggedInUserId");
-  console.log("Logged In User ID (Client-Side):", loggedInUserId); // Add this line to log the loggedInUserId
 
   return (
     <BrowserRouter>
@@ -65,17 +58,6 @@ function App() {
         <Route
           path="/chatroom/:id"
           element={<ChatDashPage socket={socket} />}
-          exact
-        />
-        <Route
-          path="/private-messages/:loggedInUserId/:selectedUserId"
-          element={<PrivateMessagesPage />}
-        />
-        <Route
-          path="/user-search"
-          element={
-            <UserSearch loggedInUserId={loggedInUserId} socket={socket} />
-          }
           exact
         />
         <Route path="*" element={<ErrorPage />} />{" "}
