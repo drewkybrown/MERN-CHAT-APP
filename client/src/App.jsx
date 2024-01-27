@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ChatDashPage from "./pages/ChatDashPage";
 import HomePage from "./pages/HomePage";
+import PrivateSearchPage from "./pages/PrivateSearchPage";
+import PrivateChatPage from "./pages/PrivateChatPage";
 
 import io from "socket.io-client";
 import ChatHeaderPage from "./pages/ChatHeaderPage";
@@ -56,9 +58,18 @@ function App() {
           exact
         />
         <Route
+          path="/private"
+          element={<PrivateSearchPage socket={socket} />}
+          exact
+        />
+        <Route
           path="/chatroom/:id"
           element={<ChatDashPage socket={socket} />}
           exact
+        />
+        <Route
+          path="/private/:receiverUserId"
+          element={<PrivateChatPage socket={socket} />}
         />
         <Route path="*" element={<ErrorPage />} />{" "}
         {/* Catch-all route for errors */}

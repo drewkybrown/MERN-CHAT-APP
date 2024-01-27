@@ -9,18 +9,22 @@ import jwt from "jwt-then";
 export const searchUsers = async (req, res) => {
   try {
     const searchTerm = req.query.search;
-    console.log("Received GET request to search users with term:", searchTerm); // Added console log
-    // Use a regex for case-insensitive partial matches
+    // Log for debugging
+    console.log("Received GET request to search users with term:", searchTerm);
+
+    // Find users where the name or username matches the searchTerm, case-insensitively
     const users = await User.find({
       $or: [
-        { name: new RegExp(searchTerm, "i") },
-        { username: new RegExp(searchTerm, "i") },
+        { name: { $regex: searchTerm, $options: "i" } },
+        { username: { $regex: searchTerm, $options: "i" } },
       ],
-    }).select("-password"); // Exclude password field from results
-    console.log("Found users matching the search term:", users); // Added console log
+    }).select("-password"); // Exclude the password field
+
+    // Log for debugging
+    console.log("Found users matching the search term:", users);
     res.json(users);
   } catch (error) {
-    console.error("Error during user search:", error); // Added console log
+    console.error("Error during user search:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -79,7 +83,10 @@ export const login = async (req, res) => {
       throw new Error("Username and Password did not match.");
     }
 
-    const token = await jwt.sign({ id: user.id }, process.env.SECRET);
+    const token = await jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.SECRET
+    );
 
     // Send back the token and user data
     console.log("User logged in successfully:", user); // Added console log

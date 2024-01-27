@@ -1,13 +1,20 @@
-// import express from "express";
-// import {
-//   getPrivateMessages,
-//   sendPrivateMessage,
-// } from "../controllers/privateMessageController.mjs";
-// import auth from "../middlewares/auth.mjs";
+import express from "express";
+const router = express.Router();
+import { savePrivateMessage } from "../controllers/privateMessageController.mjs";
 
-// const router = express.Router();
+router.post("/send", async (req, res) => {
+  try {
+    const messageData = req.body;
+    console.log("Received POST request to send private message:", messageData);
 
-// router.get("/:userId", auth, getPrivateMessages);
-// router.post("/", auth, sendPrivateMessage);
+    const savedMessage = await savePrivateMessage(messageData);
+    console.log("Private message saved:", savedMessage);
 
-// export default router;
+    res.status(200).json(savedMessage);
+  } catch (error) {
+    console.error("Error while sending private message:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+export default router;

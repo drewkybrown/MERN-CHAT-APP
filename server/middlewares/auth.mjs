@@ -9,6 +9,10 @@ const middleware = async (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1];
     const payload = await jwt.verify(token, process.env.SECRET);
     req.payload = payload;
+
+    // Log the payload to the console
+    console.log("JWT Payload:", payload);
+
     console.log("Token verified successfully.");
     next();
   } catch (err) {

@@ -1,7 +1,8 @@
 import jwt from "jwt-then";
 import User from "./models/User.js";
 import Message from "./models/Message.js";
-// import PrivateMessage from "./models/PrivateMessage.js"; // Import the PrivateMessage model
+import Chat from "./models/Chat.js"; // Import the Chat model
+import { savePrivateMessage } from "./controllers/privateMessageController.mjs";
 
 let userSocketMap = {}; // Maps user IDs to socket IDs
 
@@ -31,7 +32,7 @@ export function setupSockets(io) {
 
   // Handling connection event
   io.on("connection", (socket) => {
-    console.log("Socket connected:", socket.userId);
+    // console.log("Socket connected:", socket.userId);
 
     // Joining a chatroom
     socket.on("joinRoom", ({ chatroomId }) => {
@@ -70,29 +71,80 @@ export function setupSockets(io) {
     });
 
     // Handling private message event
-    socket.on("privateMessage", async ({ recipientId, message }) => {
-      if (message.trim().length > 0) {
-        const newPrivateMessage = new PrivateMessage({
-          sender: socket.userId,
-          recipient: recipientId,
+    socket.on("private message", async (data) => {
+      try {
+        const { senderId, receiverId, message } = data;
+        console.log(
+          "Received private message from user:",
+          senderId,
+          "to user:",
+          receiverId,
+          "Message:",
+          message
+        );
+
+        // Create a new private chatroom or retrieve an existing one
+        const chatroomId = await getOrCreatePrivateChatroom(
+          senderId,
+          receiverId
+        );
+
+        // Save the private message
+        const savedMessage = await savePrivateMessage({
+          chatroomId,
+          senderId,
+          receiverId,
           message,
         });
-        await newPrivateMessage.save();
 
-        const recipientSocketId = userSocketMap[recipientId];
-        if (recipientSocketId) {
-          io.to(recipientSocketId).emit("newPrivateMessage", newPrivateMessage);
+        // Emit to the specific user if they are connected
+        const receiverSocketId = userSocketMap[receiverId];
+        if (receiverSocketId) {
+          console.log(
+            "Sending private message to user:",
+            receiverId,
+            "Message:",
+            savedMessage
+          );
+          io.to(receiverSocketId).emit("new private message", savedMessage);
+        } else {
+          console.log("Receiver is not connected at the moment.");
         }
-
-        // Optionally, also emit back to the sender
-        socket.emit("newPrivateMessage", newPrivateMessage);
+      } catch (error) {
+        console.error("Error in private message event: ", error);
       }
     });
 
-    // Disconnect event
+    // Handle disconnect
     socket.on("disconnect", () => {
-      console.log("Socket disconnected:", socket.userId);
-      delete userSocketMap[socket.userId]; // Remove user from the map
+      // console.log("User disconnected: ", socket.userId);
+      delete userSocketMap[socket.userId];
     });
   });
+}
+
+// Function to create or retrieve a private chatroom
+async function getOrCreatePrivateChatroom(senderId, receiverId) {
+  try {
+    // Check if a chatroom already exists with both senderId and receiverId as participants
+    const existingChatroom = await Chat.findOne({
+      participants: { $all: [senderId, receiverId] },
+      private: true, // Optionally, mark this as a private chatroom
+    });
+
+    if (existingChatroom) {
+      return existingChatroom._id;
+    } else {
+      // Create a new private chatroom
+      const newChatroom = new Chat({
+        participants: [senderId, receiverId],
+        private: true, // Mark this as a private chatroom
+      });
+
+      await newChatroom.save();
+      return newChatroom._id;
+    }
+  } catch (error) {
+    throw error;
+  }
 }

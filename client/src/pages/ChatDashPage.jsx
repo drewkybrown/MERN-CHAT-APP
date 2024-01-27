@@ -143,7 +143,7 @@ const ChatDashPage = ({ socket }) => {
               <div
                 className={`${
                   message.user._id === user._id
-                    ? "bg-blue-500 text-red rounded-lg p-2 inline-block"
+                    ? "bg-blue-500 text-white rounded-lg p-2 inline-block"
                     : "bg-red-300 text-black rounded-lg p-2 inline-block"
                 }`}
               >
@@ -163,13 +163,13 @@ const ChatDashPage = ({ socket }) => {
           <div className="mt-2 flex justify-end">
             <button
               onClick={sendMessage}
-              className="px-4 py-2 bg-blue-500 text-red rounded hover:bg-blue-600 focus:outline-none focus:ring focus:bg-blue-600"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring focus:bg-blue-600"
             >
               Send
             </button>
             <button
               onClick={() => navigate("/dashboard")}
-              className="ml-2 px-4 py-2 bg-red-500 text-red rounded hover:bg-red-600 focus:outline-none focus:ring focus:bg-red-600"
+              className="ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring focus:bg-red-600"
             >
               Leave Chat Room
             </button>

@@ -87,12 +87,12 @@ const ChatHeaderPage = () => {
   };
 
   return (
-    <div className="p-4 h-full bg-blue-500">
-      <div className="text-white">
-        Welcome, {user ? user.name : "Guest"}!
+    <div className="p-4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white">
+      <div className="flex justify-between items-center">
+        <div className="text-2xl font-bold">Chat App</div>
         <button
           onClick={logout}
-          className="px-3 py-1 bg-red-600 rounded hover:bg-red-700 mt-4"
+          className="px-3 py-1 bg-red-600 rounded hover:bg-red-700"
         >
           Logout
         </button>
@@ -100,7 +100,7 @@ const ChatHeaderPage = () => {
       <div className="mt-4">
         <label
           htmlFor="chatroomName"
-          className="block text-white font-medium text-sm mb-1"
+          className="block text-sm font-medium text-gray-700 mb-1"
         >
           Chatroom Name
         </label>
@@ -121,26 +121,30 @@ const ChatHeaderPage = () => {
           </button>
         </div>
       </div>
-      <div className="mt-4 h-full">
+      <div className="mt-4">
         {chatrooms.map((chatroom) => (
-          <div key={chatroom._id}>
-            <span className="text-white mr-2">{chatroom.name}</span>
+          <div
+            key={chatroom._id}
+            className="mb-2 flex items-center justify-between"
+          >
             <Link
               to={"/chatroom/" + chatroom._id}
-              className="text-white-500 hover:text-blue-600"
+              className="text-lg font-semibold hover:text-blue-600"
             >
-              Join
+              {chatroom.name}
             </Link>
             {countUnreadMessages(chatroom._id) > 0 && (
-              <span className="text-red-500 ml-2">
+              <span className="text-red-500">
                 {countUnreadMessages(chatroom._id)}
               </span>
             )}
           </div>
         ))}
+
+        {/* Link to Private Messages */}
         <Link
-          to="/user-search"
-          className="mt-4 text-blue-500 hover:text-blue-600 block"
+          to="/private"
+          className="mt-4 text-lg font-semibold hover:text-blue-600 block"
         >
           Private Messages
         </Link>

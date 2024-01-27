@@ -8,20 +8,23 @@ import { setupSockets } from "./sockets.js";
 
 dotenv.config();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001; // Use a different port
+
+const server = http.createServer(app); // Create the HTTP server
+
+server.listen(port, () => {
+  serverStatus = "running";
+  console.log(`Server is running on port ${port}`);
+});
+
 let serverStatus = "not running";
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on("error", (err) => {
   console.error("MongoDB connection error: " + err);
   process.exit(-1);
 });
-
-const server = http.createServer(app);
 
 const io = new SocketServer(server, {
   cors: {
@@ -38,11 +41,6 @@ app.use(express.static(new URL("./public", import.meta.url).pathname));
 
 app.get("/checkStatus", (req, res) => {
   res.json({ status: serverStatus });
-});
-
-server.listen(port, () => {
-  serverStatus = "running";
-  console.log(`Server is running on port ${port}`);
 });
 
 server.on("error", (error) => {
