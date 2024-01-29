@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { savePrivateMessage } from "../controllers/privateMessageController.mjs";
+import privateMessageController from "../controllers/privateMessageController.mjs";
 
 router.post("/send", async (req, res) => {
   try {

@@ -2,7 +2,6 @@ import jwt from "jwt-then";
 import User from "./models/User.js";
 import Message from "./models/Message.js";
 import Chat from "./models/Chat.js"; // Import the Chat model
-import { savePrivateMessage } from "./controllers/privateMessageController.mjs";
 
 let userSocketMap = {}; // Maps user IDs to socket IDs
 
