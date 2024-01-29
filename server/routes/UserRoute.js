@@ -4,7 +4,7 @@ import {
   login,
   searchUsers,
 } from "../controllers/userController.mjs";
-import auth from "../middlewares/auth.mjs"; // Ensure this path is correct
+import auth from "../middlewares/auth.mjs";
 
 const router = Router();
 

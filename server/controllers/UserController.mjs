@@ -1,26 +1,20 @@
 import mongoose from "mongoose";
 import User from "../models/User.js"; // Adjust the import path as needed
 import bcrypt from "bcryptjs";
-
 import jwt from "jwt-then";
-
-// UserController.js
 
 export const searchUsers = async (req, res) => {
   try {
     const searchTerm = req.query.search;
-    // Log for debugging
     console.log("Received GET request to search users with term:", searchTerm);
 
-    // Find users where the name or username matches the searchTerm, case-insensitively
     const users = await User.find({
       $or: [
         { name: { $regex: searchTerm, $options: "i" } },
         { username: { $regex: searchTerm, $options: "i" } },
       ],
-    }).select("-password"); // Exclude the password field
+    }).select("-password");
 
-    // Log for debugging
     console.log("Found users matching the search term:", users);
     res.json(users);
   } catch (error) {
@@ -34,8 +28,9 @@ export const register = async (req, res) => {
     console.log("Received POST request to register a user.");
 
     const { name, username, password } = req.body;
-    console.log("User registration data:", { name, username, password }); // Added console log
-    const usernameRegex = /^[a-zA-Z0-9._-]+$/; // Regex pattern for usernames
+    console.log("User registration data:", { name, username, password });
+
+    const usernameRegex = /^[a-zA-Z0-9._-]+$/;
 
     if (!usernameRegex.test(username)) {
       console.log("Username is not valid.");
@@ -57,7 +52,7 @@ export const register = async (req, res) => {
     const user = new User({ name, username, password: hashedPassword });
     await user.save();
 
-    console.log("User registered successfully:", user); // Added console log
+    console.log("User registered successfully:", user);
     res.json({ message: "User [" + name + "] registered successfully!" });
   } catch (error) {
     console.error("Error during user registration:", error);
@@ -70,7 +65,8 @@ export const login = async (req, res) => {
     console.log("Received POST request to login a user.");
 
     const { username, password } = req.body;
-    console.log("User login data:", { username, password }); // Added console log
+    console.log("User login data:", { username, password });
+
     const user = await User.findOne({ username });
     if (!user) {
       console.log("Username and Password did not match.");
@@ -88,8 +84,7 @@ export const login = async (req, res) => {
       process.env.SECRET
     );
 
-    // Send back the token and user data
-    console.log("User logged in successfully:", user); // Added console log
+    console.log("User logged in successfully:", user);
     res.json({
       message: "User logged in successfully!",
       token,
@@ -97,7 +92,6 @@ export const login = async (req, res) => {
         _id: user._id,
         name: user.name,
         username: user.username,
-        // Include other user data fields as needed
       },
     });
   } catch (error) {

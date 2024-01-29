@@ -4,7 +4,7 @@ import Chat from "../models/Chat.js"; // Import the Chat model
 export const getAllChatrooms = async (req, res) => {
   try {
     console.log("Received GET request to get all chatrooms.");
-    const chatrooms = await Chat.find({}); // Use the Chat model instead of Chatroom
+    const chatrooms = await Chat.find({});
     res.json(chatrooms);
   } catch (error) {
     console.error("Error while getting chatrooms:", error);
@@ -43,18 +43,18 @@ export const createChatroom = async (req, res) => {
 
     if (!nameRegex.test(name)) {
       console.log("Chat name can contain only alphabets.");
-      throw "Chat name can contain only alphabets.";
+      throw new Error("Chat name can contain only alphabets.");
     }
 
-    const chatroomAvailable = await Chat.findOne({ name }); // Use the Chat model instead of Chatroom
+    const chatroomAvailable = await Chat.findOne({ name });
 
     if (chatroomAvailable) {
       console.log("Chatroom with that name already exists!");
-      throw "Chatroom with that name already exists!";
+      throw new Error("Chatroom with that name already exists!");
     }
 
     const chatroom = new Chat({
-      name, // Use the Chat model instead of Chatroom
+      name,
     });
 
     await chatroom.save();

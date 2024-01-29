@@ -16,4 +16,4 @@ const savePrivateMessage = async (data) => {
   }
 };
 
-export default savePrivateMessage;
+export { savePrivateMessage };
